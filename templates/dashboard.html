@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IrriOlive — Irrigation Intelligente de l'Olivier · El Kelaa des Sraghna</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@200;300;400;500;600&family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --olive-deep:   #1c2b0e;
+  --olive-dark:   #2d4a1a;
+  --olive-mid:    #4a7c2f;
+  --olive-light:  #7ab648;
+  --olive-pale:   #b5d48a;
+  --gold-warm:    #c8922a;
+  --gold-light:   #e6b84a;
+  --cream:        #f5f0e8;
+  --sand:         #e8dfc8;
+  --earth:        #8b6914;
+  --sky-dusk:     #2a3d5c;
+  --text-dark:    #1a2810;
+  --text-mid:     #3d5a28;
+  --white:        #ffffff;
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body:    'Outfit', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body { font-family: var(--ff-body); background: var(--olive-deep); color: var(--cream); overflow-x: hidden; }
+
+[lang="ar"] body, [lang="ar"] { font-family: 'Cairo', sans-serif; }
+
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 5%; background: linear-gradient(to bottom, rgba(28,43,14,0.97), transparent); backdrop-filter: blur(2px); transition: all 0.4s ease; }
+nav.scrolled { background: rgba(28,43,14,0.97); box-shadow: 0 2px 30px rgba(0,0,0,0.4); padding: 0.9rem 5%; }
+.nav-logo { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; }
+.nav-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--olive-mid), var(--olive-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 0 0 2px rgba(122,182,72,0.3); }
+.nav-logo-text { font-family: var(--ff-display); font-size: 1.25rem; font-weight: 700; color: var(--cream); letter-spacing: 0.02em; }
+.nav-logo-text span { color: var(--olive-light); }
+.nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+.nav-links a { font-size: 0.82rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,240,232,0.7); text-decoration: none; transition: color 0.25s; position: relative; }
+.nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; right: 0; height: 1px; background: var(--olive-light); transform: scaleX(0); transition: transform 0.25s; }
+.nav-links a:hover { color: var(--cream); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-actions { display: flex; align-items: center; gap: 0.55rem; flex-shrink: 0; }
+
+.nav-lang-btn {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.42rem 0.9rem;
+  background: rgba(122,182,72,0.08);
+  border: 1px solid rgba(122,182,72,0.28);
+  border-radius: 20px;
+  color: rgba(245,240,232,0.72);
+  font-family: var(--ff-body); font-size: 0.73rem; font-weight: 500;
+  cursor: pointer; transition: all 0.25s; letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.nav-lang-btn:hover { background: rgba(122,182,72,0.18); border-color: rgba(122,182,72,0.55); color: var(--olive-light); transform: translateY(-1px); }
+.lang-flag { font-size: 0.88rem; line-height: 1; }
+
+/* ── User account badge ── */
+.nav-user-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.nav-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8612e, #f4884d);
+  border: 2px solid rgba(232,97,46,0.55);
+  box-shadow: 0 0 0 3px rgba(232,97,46,0.15), 0 3px 12px rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ff-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0;
+  transition: all 0.25s;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.nav-user-btn:hover .nav-user-avatar {
+  border-color: rgba(232,97,46,0.85);
+  box-shadow: 0 0 0 4px rgba(232,97,46,0.2), 0 6px 18px rgba(0,0,0,0.4);
+  transform: scale(1.07);
+}
+/* Dropdown */
+.nav-user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 230px;
+  background: rgba(18,28,10,0.97);
+  border: 1px solid rgba(122,182,72,0.18);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(122,182,72,0.08);
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.97);
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 200;
+  overflow: hidden;
+  backdrop-filter: blur(14px);
+}
+.nav-user-btn:hover .nav-user-dropdown,
+.nav-user-btn:focus-within .nav-user-dropdown,
+.nav-user-btn.open .nav-user-dropdown {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+.nav-user-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e8612e, transparent);
+}
+.nud-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.1rem 1.2rem 0.9rem;
+  border-bottom: 1px solid rgba(122,182,72,0.1);
+}
+.nud-avatar-lg {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8612e, #f4884d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(232,97,46,0.35);
+}
+.nud-info {}
+.nud-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cream);
+  line-height: 1.2;
+}
+.nud-email {
+  font-size: 0.68rem;
+  font-weight: 300;
+  color: rgba(245,240,232,0.4);
+  margin-top: 0.1rem;
+  word-break: break-all;
+}
+.nud-items {
+  padding: 0.5rem;
+}
+.nud-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 9px;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: rgba(245,240,232,0.55);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--ff-body);
+}
+.nud-item:hover {
+  background: rgba(122,182,72,0.08);
+  color: var(--cream);
+}
+
+/* Se connecter — highlighted style */
+.nud-item-connect {
+  color: var(--olive-light) !important;
+  font-weight: 500 !important;
+  background: rgba(122,182,72,0.06) !important;
+  border: 1px solid rgba(122,182,72,0.18) !important;
+  border-radius: 9px !important;
+  transition: all 0.22s !important;
+}
+.nud-item-connect:hover {
+  background: rgba(122,182,72,0.16) !important;
+  border-color: rgba(122,182,72,0.38) !important;
+  color: var(--olive-pale) !important;
+  transform: translateX(2px);
+}
+
+.nud-item-icon {
+  font-size: 0.88rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+html[dir="rtl"] .nav-user-dropdown { right: auto; left: 0; }
+html[dir="rtl"] .nud-header { flex-direction: row-reverse; }
+html[dir="rtl"] .nud-info { text-align: right; }
+html[dir="rtl"] .nud-item { flex-direction: row-reverse; text-align: right; }
+
+.hero { position: relative; min-height: 100vh; display: flex; align-items: center; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(74,124,47,0.18) 0%, transparent 65%), radial-gradient(ellipse 50% 70% at 10% 70%, rgba(200,146,42,0.08) 0%, transparent 60%), linear-gradient(160deg, #0e1a07 0%, #1c2b0e 35%, #152209 70%, #0a130a 100%); }
+.hero-grid { position: absolute; inset: 0; z-index: 1; opacity: 0.04; background-image: linear-gradient(rgba(122,182,72,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(122,182,72,0.8) 1px, transparent 1px); background-size: 60px 60px; animation: gridDrift 30s linear infinite; }
+@keyframes gridDrift { from { transform: translate(0, 0); } to { transform: translate(60px, 60px); } }
+.hero-circle { position: absolute; border-radius: 50%; border: 1px solid rgba(122,182,72,0.12); z-index: 1; }
+.hero-circle-1 { width: 600px; height: 600px; top: -200px; right: -150px; animation: rotateSlow 40s linear infinite; }
+.hero-circle-2 { width: 400px; height: 400px; top: -100px; right: -50px; animation: rotateSlow 28s linear infinite reverse; }
+.hero-circle-3 { width: 800px; height: 800px; bottom: -300px; left: -200px; border-color: rgba(200,146,42,0.06); animation: rotateSlow 55s linear infinite; }
+@keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.hero-branch { position: absolute; right: 8%; top: 50%; transform: translateY(-50%); z-index: 2; opacity: 0.07; font-size: 22rem; line-height: 1; animation: sway 8s ease-in-out infinite; filter: blur(1px); user-select: none; }
+@keyframes sway { 0%, 100% { transform: translateY(-50%) rotate(-4deg); } 50% { transform: translateY(-52%) rotate(4deg); } }
+.pulse-dot { position: absolute; z-index: 3; width: 12px; height: 12px; border-radius: 50%; background: var(--olive-light); }
+.pulse-dot::before, .pulse-dot::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 1.5px solid var(--olive-light); animation: pulseRing 2s ease-out infinite; }
+.pulse-dot::after { animation-delay: 1s; }
+@keyframes pulseRing { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(2.5); opacity: 0; } }
+.pulse-dot-1 { top: 24%; right: 24.5%; } .pulse-dot-2 { top: 60%; right: 14.5%; } .pulse-dot-3 { top: 40%; right: 38.5%; }
+.hero-content { position: relative; z-index: 10; width: 100%; padding: 0 5%; padding-top: 7rem; max-width: 900px; margin: 0 auto; text-align: center; animation: heroReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes heroReveal { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.hero-title { font-family: var(--ff-display); font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.2; color: var(--cream); margin-bottom: 1.5rem; animation: heroReveal 1.2s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-title span { color: var(--olive-light); font-style: italic; }
+.hero-region { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.1rem; font-weight: 400; color: var(--cream); animation: heroReveal 1.2s 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; background: rgba(28,43,14,0.6); padding: 0.8rem 2rem; border-radius: 50px; backdrop-filter: blur(5px); border: 1px solid rgba(122,182,72,0.3); margin: 0 auto; }
+.hero-region svg { width: 20px; height: 20px; stroke: var(--gold-light); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.hero-region strong { color: var(--gold-light); font-weight: 600; }
+.hero-cta-wrap { margin-top: 2rem; display: flex; flex-direction: column; align-items: center; gap: 0.7rem; animation: heroReveal 1.2s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-cta-btn { display: inline-flex; align-items: center; gap: 0.8rem; padding: 1rem 2.4rem; background: linear-gradient(135deg, var(--olive-mid), var(--olive-light)); border: none; border-radius: 50px; color: var(--olive-deep); font-family: var(--ff-body); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 8px 28px rgba(74,124,47,0.45); letter-spacing: 0.01em; }
+.hero-cta-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 14px 40px rgba(74,124,47,0.6), 0 0 0 6px rgba(122,182,72,0.15); }
+.hero-cta-btn:active { transform: translateY(-1px) scale(1.01); }
+.hero-cta-icon { font-size: 1.2rem; }
+.hero-cta-arrow { font-size: 1.1rem; transition: transform 0.25s; }
+.hero-cta-btn:hover .hero-cta-arrow { transform: translateX(4px); }
+.hero-cta-hint { font-size: 0.72rem; font-weight: 300; color: rgba(245,240,232,0.35); letter-spacing: 0.04em; }
+.hero-stats { position: absolute; bottom: 0; left: 0; right: 0; z-index: 10; display: flex; background: rgba(14,26,7,0.85); border-top: 1px solid rgba(122,182,72,0.12); backdrop-filter: blur(12px); animation: heroReveal 1.2s 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-stat { flex: 1; padding: 1.4rem 2rem; border-right: 1px solid rgba(122,182,72,0.1); display: flex; flex-direction: column; gap: 0.2rem; transition: background 0.3s; }
+.hero-stat:last-child { border-right: none; }
+.hero-stat:hover { background: rgba(122,182,72,0.06); }
+.stat-num { font-family: var(--ff-display); font-size: 1.8rem; font-weight: 700; color: var(--olive-light); line-height: 1; }
+.stat-num span { font-size: 1rem; font-weight: 400; color: var(--olive-pale); }
+.stat-label { font-size: 0.72rem; font-weight: 300; letter-spacing: 0.08em; color: rgba(245,240,232,0.45); }
+
+.section-context { padding: 8rem 5%; background: linear-gradient(180deg, var(--olive-deep) 0%, #121f08 100%); position: relative; overflow: hidden; }
+.section-context::before { content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(122,182,72,0.3), transparent); }
+.context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; max-width: 1200px; margin: 0 auto; }
+.section-tag { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 1.2rem; }
+.section-tag::before { content: ''; display: block; width: 28px; height: 1px; background: var(--gold-light); }
+.section-title { font-family: var(--ff-display); font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700; line-height: 1.15; color: var(--cream); margin-bottom: 1.2rem; }
+.section-title em { font-style: italic; color: var(--olive-light); }
+.section-text { font-size: 0.95rem; font-weight: 300; line-height: 1.8; color: rgba(245,240,232,0.6); margin-bottom: 1.2rem; }
+.context-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(122,182,72,0.12); border-radius: 16px; padding: 2.5rem; position: relative; overflow: hidden; }
+.context-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--olive-mid), transparent); }
+.problem-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+.problem-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.2rem; background: rgba(200,146,42,0.06); border: 1px solid rgba(200,146,42,0.12); border-radius: 10px; transition: all 0.3s; }
+.problem-item:hover { background: rgba(200,146,42,0.1); transform: translateX(4px); }
+.problem-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+.problem-text strong { display: block; font-size: 0.85rem; font-weight: 500; color: var(--cream); margin-bottom: 0.2rem; }
+.problem-text span { font-size: 0.78rem; font-weight: 300; color: rgba(245,240,232,0.5); }
+
+.section-arch { padding: 8rem 5%; background: linear-gradient(180deg, #0d1a07 0%, #0a1405 100%); position: relative; }
+.arch-header { text-align: center; max-width: 650px; margin: 0 auto 5rem; }
+.arch-pipeline { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 0; position: relative; }
+.arch-pipeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, transparent, rgba(122,182,72,0.3) 10%, rgba(122,182,72,0.3) 90%, transparent); transform: translateX(-50%); }
+.arch-step { display: flex; align-items: center; gap: 3rem; padding: 2rem 0; }
+.arch-step:nth-child(even) { flex-direction: row-reverse; }
+.arch-node { flex: 1; display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.arch-step:nth-child(even) .arch-node { align-items: flex-start; text-align: left; }
+.arch-center { flex-shrink: 0; width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--olive-dark), var(--olive-mid)); border: 2px solid rgba(122,182,72,0.4); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; box-shadow: 0 0 0 8px rgba(122,182,72,0.06), 0 8px 24px rgba(0,0,0,0.3); position: relative; z-index: 2; transition: all 0.3s; }
+.arch-center:hover { transform: scale(1.1); box-shadow: 0 0 0 12px rgba(122,182,72,0.1), 0 12px 32px rgba(0,0,0,0.4); }
+.arch-info { flex: 1; }
+.arch-num { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--olive-mid); margin-bottom: 0.4rem; }
+.arch-title { font-family: var(--ff-display); font-size: 1.2rem; font-weight: 700; color: var(--cream); margin-bottom: 0.5rem; }
+.arch-desc { font-size: 0.83rem; font-weight: 300; line-height: 1.7; color: rgba(245,240,232,0.55); }
+
+.section-goals { padding: 8rem 5%; background: var(--olive-deep); position: relative; overflow: hidden; }
+.goals-bg { position: absolute; bottom: -200px; right: -200px; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(122,182,72,0.05) 0%, transparent 70%); }
+.goals-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+.goal-item { display: flex; gap: 1rem; padding: 1.3rem 0; border-bottom: 1px solid rgba(122,182,72,0.08); transition: all 0.3s; }
+.goal-item:last-child { border-bottom: none; }
+.goal-item:hover .goal-number { color: var(--olive-light); background: rgba(122,182,72,0.15); }
+.goal-number { width: 32px; height: 32px; border-radius: 8px; background: rgba(122,182,72,0.08); border: 1px solid rgba(122,182,72,0.15); display: flex; align-items: center; justify-content: center; font-family: var(--ff-display); font-size: 0.8rem; font-weight: 700; color: var(--olive-mid); flex-shrink: 0; transition: all 0.3s; }
+.goal-text strong { display: block; font-size: 0.88rem; font-weight: 500; color: var(--cream); margin-bottom: 0.25rem; }
+.goal-text span { font-size: 0.78rem; font-weight: 300; line-height: 1.6; color: rgba(245,240,232,0.5); }
+.goals-right { display: flex; flex-direction: column; gap: 1.2rem; }
+.result-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(122,182,72,0.1); border-radius: 14px; padding: 1.8rem; display: flex; align-items: center; gap: 1.4rem; transition: all 0.3s; }
+.result-card:hover { border-color: rgba(122,182,72,0.25); background: rgba(122,182,72,0.05); transform: translateX(4px); }
+.rc-icon { font-size: 2rem; flex-shrink: 0; }
+.rc-val { font-family: var(--ff-display); font-size: 1.6rem; font-weight: 700; color: var(--olive-light); line-height: 1; margin-bottom: 0.2rem; }
+.rc-label { font-size: 0.78rem; font-weight: 300; color: rgba(245,240,232,0.5); }
+
+footer { background: #070e04; border-top: 1px solid rgba(122,182,72,0.1); padding: 4rem 5% 2.5rem; }
+.footer-top { display: flex; justify-content: space-between; align-items: flex-start; max-width: 1100px; margin: 0 auto 3rem; gap: 3rem; flex-wrap: wrap; }
+.footer-brand p { font-size: 0.8rem; font-weight: 300; color: rgba(245,240,232,0.35); max-width: 260px; line-height: 1.7; }
+.footer-info { display: flex; flex-direction: column; gap: 0.5rem; }
+.footer-info-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 300; color: rgba(245,240,232,0.4); }
+.footer-info-item svg { width: 13px; height: 13px; stroke: var(--olive-mid); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.footer-bottom { max-width: 1100px; margin: 0 auto; padding-top: 2rem; border-top: 1px solid rgba(122,182,72,0.07); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-copy { font-size: 0.72rem; font-weight: 300; color: rgba(245,240,232,0.25); }
+.footer-uni { font-size: 0.72rem; font-weight: 400; color: rgba(245,240,232,0.35); }
+
+.profile-section { padding: 4rem 5% 2rem; background: var(--olive-deep); position: relative; }
+.profile-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(122,182,72,0.25), transparent); }
+.profile-section-header { max-width: 1200px; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.8rem; }
+.profile-section-title { font-family: var(--ff-display); font-size: 1.5rem; font-weight: 700; color: var(--cream); display: flex; align-items: center; gap: 0.6rem; }
+.profile-section-title .ps-count { font-size: 0.78rem; font-weight: 400; color: rgba(245,240,232,0.4); background: rgba(122,182,72,0.1); border: 1px solid rgba(122,182,72,0.2); border-radius: 20px; padding: 0.2rem 0.7rem; }
+.profile-add-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.4rem; background: linear-gradient(135deg, rgba(74,124,47,0.3), rgba(122,182,72,0.15)); border: 1px solid rgba(122,182,72,0.35); border-radius: 10px; color: var(--olive-light); font-family: var(--ff-body); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.25s; }
+.profile-add-btn:hover { background: linear-gradient(135deg, rgba(74,124,47,0.5), rgba(122,182,72,0.25)); border-color: rgba(122,182,72,0.55); transform: translateY(-1px); }
+.profile-add-btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+.profiles-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
+
+.profile-card { background: linear-gradient(140deg, rgba(22,38,12,0.98), rgba(12,20,6,0.99)); border: 1px solid rgba(122,182,72,0.2); border-radius: 20px; overflow: hidden; position: relative; animation: cardPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both; transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s; cursor: pointer; }
+.profile-card:hover { border-color: rgba(122,182,72,0.45); box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: translateY(-4px); }
+@keyframes cardPop { from { opacity: 0; transform: scale(0.9) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.pc-accent { height: 3px; background: linear-gradient(90deg, var(--olive-mid), var(--olive-light), var(--gold-light)); }
+.pc-header { display: flex; align-items: center; gap: 1rem; padding: 1.4rem 1.5rem 1rem; }
+.pc-avatar { width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, var(--olive-mid), var(--olive-light)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; box-shadow: 0 6px 20px rgba(74,124,47,0.4); position: relative; }
+.pc-avatar-ring { position: absolute; inset: -3px; border-radius: 17px; border: 2px solid rgba(122,182,72,0.35); }
+.pc-title-block { flex: 1; min-width: 0; }
+.pc-name { font-family: var(--ff-display); font-size: 1rem; font-weight: 700; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-location { font-size: 0.72rem; font-weight: 300; color: rgba(245,240,232,0.45); margin-top: 0.15rem; display: flex; align-items: center; gap: 0.3rem; }
+.pc-index-badge { width: 26px; height: 26px; border-radius: 8px; background: rgba(122,182,72,0.12); border: 1px solid rgba(122,182,72,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: var(--olive-light); flex-shrink: 0; }
+.pc-info { padding: 0 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.45rem; }
+.pc-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.7rem; background: rgba(255,255,255,0.025); border-radius: 8px; }
+.pc-row-icon { font-size: 0.9rem; width: 18px; text-align: center; flex-shrink: 0; }
+.pc-row-key { font-size: 0.67rem; color: rgba(245,240,232,0.35); min-width: 68px; flex-shrink: 0; }
+.pc-row-val { font-size: 0.75rem; font-weight: 500; color: var(--cream); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-row-val.green { color: var(--olive-light); font-weight: 600; }
+.pc-varieties { padding: 0 1.5rem 1rem; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.pc-vtag { padding: 0.18rem 0.55rem; background: rgba(122,182,72,0.1); border: 1px solid rgba(122,182,72,0.2); border-radius: 20px; font-size: 0.62rem; font-weight: 500; color: var(--olive-pale); }
+.pc-actions { display: flex; gap: 0; border-top: 1px solid rgba(122,182,72,0.1); }
+.pc-btn { flex: 1; padding: 0.75rem 0.5rem; font-family: var(--ff-body); font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; justify-content: center; gap: 0.35rem; background: transparent; border: none; border-right: 1px solid rgba(122,182,72,0.08); }
+.pc-btn:last-child { border-right: none; }
+.pc-btn-view { color: var(--olive-light); }
+.pc-btn-view:hover { background: rgba(122,182,72,0.12); }
+.pc-btn-edit { color: rgba(245,240,232,0.5); }
+.pc-btn-edit:hover { background: rgba(122,182,72,0.08); color: var(--olive-light); }
+.pc-btn-delete { color: rgba(231,76,60,0.5); }
+.pc-btn-delete:hover { background: rgba(192,57,43,0.1); color: #e74c3c; }
+
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.profile-page { position: fixed; inset: 0; z-index: 400; background: #070f04; overflow-y: auto; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; scrollbar-width: thin; scrollbar-color: rgba(122,182,72,0.3) transparent; }
+.profile-page.open { opacity: 1; pointer-events: all; }
+.profile-page::-webkit-scrollbar { width: 6px; }
+.profile-page::-webkit-scrollbar-thumb { background: rgba(122,182,72,0.3); border-radius: 3px; }
+.pp-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 70% 50% at 80% 20%, rgba(74,124,47,0.14) 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 10% 80%, rgba(200,146,42,0.07) 0%, transparent 60%), #070f04; }
+.pp-grid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.025; background-image: linear-gradient(rgba(122,182,72,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(122,182,72,0.8) 1px, transparent 1px); background-size: 60px 60px; }
+.pp-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 5% 6rem; }
+.pp-topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; background: rgba(7,15,4,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(122,182,72,0.1); margin-bottom: 2rem; }
+.pp-back-btn { display: inline-flex; align-items: center; gap: 0.6rem; background: rgba(122,182,72,0.1); border: 1px solid rgba(122,182,72,0.25); border-radius: 10px; padding: 0.6rem 1.2rem; color: var(--olive-pale); font-family: var(--ff-body); font-size: 0.82rem; font-weight: 400; cursor: pointer; transition: all 0.25s; }
+.pp-back-btn:hover { background: rgba(122,182,72,0.2); border-color: rgba(122,182,72,0.5); color: var(--olive-light); transform: translateX(-3px); }
+.pp-back-btn::before { content: '←'; font-size: 1rem; }
+.pp-topbar-logo { font-family: var(--ff-display); font-size: 1rem; font-weight: 700; color: rgba(245,240,232,0.35); }
+.pp-topbar-logo span { color: var(--olive-light); }
+.pp-hero { background: linear-gradient(135deg, rgba(28,48,14,0.95), rgba(15,26,7,0.98)); border: 1px solid rgba(122,182,72,0.25); border-radius: 24px; padding: 2.5rem 3rem; display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden; animation: ppFadeIn 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes ppFadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.pp-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--olive-light), var(--gold-light), var(--olive-mid), transparent); }
+.pp-hero::after { content: '🫒'; position: absolute; right: 3rem; top: 50%; transform: translateY(-50%); font-size: 8rem; opacity: 0.04; user-select: none; line-height: 1; }
+.pp-avatar { width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, var(--olive-dark), var(--olive-light)); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; flex-shrink: 0; box-shadow: 0 10px 32px rgba(74,124,47,0.5), 0 0 0 3px rgba(122,182,72,0.2); position: relative; }
+.pp-avatar-ring { position: absolute; inset: -4px; border-radius: 24px; border: 2px solid rgba(122,182,72,0.3); animation: avatarGlow 3s ease-in-out infinite; }
+@keyframes avatarGlow { 0%,100%{border-color:rgba(122,182,72,0.3)} 50%{border-color:rgba(122,182,72,0.6)} }
+.pp-hero-info { flex: 1; }
+.pp-hero-name { font-family: var(--ff-display); font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900; color: var(--cream); line-height: 1.1; margin-bottom: 0.4rem; }
+.pp-hero-location { font-size: 0.85rem; font-weight: 300; color: rgba(245,240,232,0.5); display: flex; align-items: center; gap: 0.4rem; }
+.pp-hero-coords { font-size: 0.72rem; color: rgba(122,182,72,0.6); margin-top: 0.3rem; font-family: monospace; }
+.pp-hero-actions { display: flex; gap: 0.8rem; flex-shrink: 0; }
+.pp-action-btn { padding: 0.65rem 1.3rem; border-radius: 10px; font-family: var(--ff-body); font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 0.4rem; }
+.pp-btn-edit { background: rgba(74,124,47,0.2); border: 1px solid rgba(122,182,72,0.35); color: var(--olive-light); }
+.pp-btn-edit:hover { background: rgba(74,124,47,0.35); transform: translateY(-1px); }
+.pp-btn-delete { background: rgba(192,57,43,0.1); border: 1px solid rgba(192,57,43,0.2); color: rgba(231,76,60,0.7); }
+.pp-btn-delete:hover { background: rgba(192,57,43,0.2); color: #e74c3c; transform: translateY(-1px); }
+.pp-stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; animation: ppFadeIn 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) both; }
+.pp-stat-card { background: linear-gradient(135deg, rgba(22,38,12,0.95), rgba(12,20,6,0.98)); border: 1px solid rgba(122,182,72,0.12); border-radius: 16px; padding: 1.3rem; text-align: center; transition: all 0.3s; }
+.pp-stat-card:hover { border-color: rgba(122,182,72,0.3); transform: translateY(-2px); }
+.pp-stat-icon { font-size: 1.5rem; margin-bottom: 0.45rem; }
+.pp-stat-val { font-family: var(--ff-display); font-size: 1.3rem; font-weight: 700; color: var(--olive-light); line-height: 1; }
+.pp-stat-label { font-size: 0.62rem; font-weight: 300; color: rgba(245,240,232,0.4); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.25rem; }
+.pp-main-grid { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; animation: ppFadeIn 0.5s 0.15s cubic-bezier(0.16,1,0.3,1) both; }
+.pp-block { background: linear-gradient(140deg, rgba(22,38,12,0.97), rgba(12,20,6,0.99)); border: 1px solid rgba(122,182,72,0.15); border-radius: 18px; overflow: hidden; margin-bottom: 1.2rem; transition: border-color 0.3s; }
+.pp-block:last-child { margin-bottom: 0; }
+.pp-block:hover { border-color: rgba(122,182,72,0.28); }
+.pp-block-header { padding: 1rem 1.4rem; background: linear-gradient(90deg, rgba(74,124,47,0.1), transparent); border-bottom: 1px solid rgba(122,182,72,0.08); display: flex; align-items: center; gap: 0.6rem; font-family: var(--ff-display); font-size: 0.9rem; font-weight: 700; color: var(--cream); }
+.pp-block-body { padding: 1.2rem 1.4rem; }
+.pp-rows { display: flex; flex-direction: column; gap: 0.5rem; }
+.pp-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 0.9rem; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid rgba(122,182,72,0.05); transition: all 0.2s; }
+.pp-row:hover { background: rgba(122,182,72,0.05); border-color: rgba(122,182,72,0.12); }
+.pp-row-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.pp-row-icon.green { background: rgba(74,124,47,0.2); border: 1px solid rgba(74,124,47,0.3); }
+.pp-row-icon.gold  { background: rgba(200,146,42,0.2); border: 1px solid rgba(200,146,42,0.3); }
+.pp-row-icon.blue  { background: rgba(42,100,170,0.2); border: 1px solid rgba(42,100,170,0.3); }
+.pp-row-icon.teal  { background: rgba(0,140,120,0.2);  border: 1px solid rgba(0,140,120,0.3); }
+.pp-row-key { font-size: 0.7rem; font-weight: 400; color: rgba(245,240,232,0.35); min-width: 110px; flex-shrink: 0; }
+.pp-row-val { font-size: 0.83rem; font-weight: 500; color: var(--cream); flex: 1; }
+.pp-row-val.accent { font-family: var(--ff-display); font-size: 1rem; color: var(--olive-light); font-weight: 700; }
+.pp-variety-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+.pp-variety-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.85rem; background: rgba(122,182,72,0.1); border: 1px solid rgba(122,182,72,0.22); border-radius: 50px; font-size: 0.73rem; font-weight: 500; color: var(--olive-pale); transition: all 0.2s; }
+.pp-variety-pill:hover { background: rgba(122,182,72,0.18); border-color: rgba(122,182,72,0.4); }
+
+.pp-weather-block { background: linear-gradient(160deg, rgba(8,18,5,0.99), rgba(5,12,3,0.99)); border: 1px solid rgba(122,182,72,0.2); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; height: fit-content; position: sticky; top: 80px; }
+.pp-weather-header { padding: 1rem 1.4rem; background: linear-gradient(90deg, rgba(74,124,47,0.12), transparent); border-bottom: 1px solid rgba(122,182,72,0.1); display: flex; align-items: center; justify-content: space-between; }
+.pp-weather-title { font-family: var(--ff-display); font-size: 0.9rem; font-weight: 700; color: var(--cream); display: flex; align-items: center; gap: 0.5rem; }
+.pp-weather-live { display: flex; align-items: center; gap: 0.4rem; font-size: 0.62rem; color: rgba(245,240,232,0.35); }
+.pp-weather-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 6px #4ade80; animation: livePulse 2s ease-in-out infinite; }
+@keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.pp-weather-body { padding: 1.5rem; flex: 1; }
+.ppw-main-block { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.ppw-big-icon { font-size: 3.5rem; line-height: 1; filter: drop-shadow(0 6px 16px rgba(122,182,72,0.3)); animation: wSway 5s ease-in-out infinite; }
+@keyframes wSway { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
+.ppw-temp-val { font-family: var(--ff-display); font-size: 3rem; font-weight: 900; color: var(--cream); line-height: 1; }
+.ppw-temp-unit { font-size: 1.1rem; font-weight: 300; color: var(--olive-pale); }
+.ppw-weather-label { font-size: 0.8rem; font-weight: 300; color: rgba(245,240,232,0.45); margin-top: 0.3rem; }
+.ppw-feels { font-size: 0.72rem; color: rgba(245,240,232,0.3); margin-top: 0.15rem; }
+.ppw-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 1rem; }
+.ppw-stat { background: rgba(122,182,72,0.07); border: 1px solid rgba(122,182,72,0.12); border-radius: 12px; padding: 0.85rem; text-align: center; transition: all 0.2s; }
+.ppw-stat:hover { background: rgba(122,182,72,0.12); }
+.ppw-stat-icon { font-size: 1.1rem; margin-bottom: 0.3rem; }
+.ppw-stat-val { font-family: var(--ff-display); font-size: 1rem; font-weight: 700; color: var(--cream); line-height: 1; }
+.ppw-stat-label { font-size: 0.58rem; color: rgba(245,240,232,0.3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.18rem; }
+.ppw-wind { margin-bottom: 0.5rem; }
+.ppw-wind-label { display: flex; justify-content: space-between; font-size: 0.67rem; color: rgba(245,240,232,0.35); margin-bottom: 0.4rem; }
+.ppw-bar-track { height: 4px; background: rgba(122,182,72,0.1); border-radius: 2px; overflow: hidden; }
+.ppw-bar-fill { height: 100%; background: linear-gradient(90deg, var(--olive-mid), var(--olive-light)); border-radius: 2px; transition: width 1.5s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 0 8px rgba(122,182,72,0.4); width: 0; }
+.ppw-footer { border-top: 1px solid rgba(122,182,72,0.07); padding: 0.75rem 1.4rem; display: flex; align-items: center; justify-content: space-between; }
+.ppw-source { font-size: 0.59rem; color: rgba(245,240,232,0.2); letter-spacing: 0.05em; }
+.ppw-refresh-btn { background: none; border: none; color: rgba(122,182,72,0.45); font-family: var(--ff-body); font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px; transition: all 0.2s; display: flex; align-items: center; gap: 0.3rem; }
+.ppw-refresh-btn:hover { color: var(--olive-light); background: rgba(122,182,72,0.08); }
+.ppw-refresh-btn.spinning .ppw-spin { animation: ppwSpin 0.8s linear infinite; display: inline-block; }
+@keyframes ppwSpin { to { transform: rotate(360deg); } }
+.ppw-loading { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 2.5rem 1rem; }
+.ppw-spinner { width: 38px; height: 38px; border: 3px solid rgba(122,182,72,0.15); border-top-color: var(--olive-light); border-radius: 50%; animation: ppwSpin 0.9s linear infinite; }
+.ppw-loading-txt { font-size: 0.75rem; color: rgba(245,240,232,0.35); text-align: center; }
+.ppw-error { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; padding: 2rem 1rem; text-align: center; }
+.ppw-error-icon { font-size: 2.2rem; }
+.ppw-error-msg { font-size: 0.73rem; color: rgba(245,240,232,0.35); line-height: 1.6; max-width: 220px; }
+.ppw-retry-btn { background: rgba(122,182,72,0.1); border: 1px solid rgba(122,182,72,0.2); color: var(--olive-light); font-family: var(--ff-body); font-size: 0.7rem; padding: 0.4rem 0.9rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.ppw-retry-btn:hover { background: rgba(122,182,72,0.2); }
+
+/* ═══ MODAL ═══ */
+.modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(10,18,5,0.88); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { width: 100%; max-width: 780px; max-height: 90vh; overflow-y: auto; background: linear-gradient(160deg, #1a2d0d 0%, #111c08 100%); border: 1px solid rgba(122,182,72,0.25); border-radius: 24px; padding: 0; box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(122,182,72,0.15); transform: scale(0.92) translateY(20px); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); scrollbar-width: thin; scrollbar-color: rgba(122,182,72,0.3) transparent; }
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+.modal::-webkit-scrollbar { width: 6px; } .modal::-webkit-scrollbar-thumb { background: rgba(122,182,72,0.3); border-radius: 3px; }
+.modal-header { position: sticky; top: 0; z-index: 10; padding: 2rem 2.5rem 1.5rem; background: linear-gradient(160deg, #1a2d0d 0%, #111c08 100%); border-bottom: 1px solid rgba(122,182,72,0.1); display: flex; align-items: center; justify-content: space-between; }
+.modal-title-wrap { display: flex; align-items: center; gap: 1rem; }
+.modal-icon { width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg, rgba(74,124,47,0.3), rgba(122,182,72,0.15)); border: 1px solid rgba(122,182,72,0.25); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+.modal-title { font-family: var(--ff-display); font-size: 1.4rem; font-weight: 700; color: var(--cream); }
+.modal-subtitle { font-size: 0.75rem; font-weight: 300; color: rgba(245,240,232,0.45); margin-top: 0.15rem; }
+.modal-close { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(245,240,232,0.5); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+.modal-close:hover { background: rgba(192,57,43,0.2); border-color: rgba(192,57,43,0.4); color: #e74c3c; }
+.modal-progress { display: flex; align-items: center; gap: 0; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(122,182,72,0.08); }
+.prog-step { display: flex; align-items: center; gap: 0.5rem; flex: 1; }
+.prog-step:last-child { flex: 0; }
+.prog-circle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(122,182,72,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 600; color: rgba(245,240,232,0.3); transition: all 0.4s; flex-shrink: 0; }
+.prog-step.done .prog-circle { background: rgba(122,182,72,0.2); border-color: var(--olive-light); color: var(--olive-light); }
+.prog-step.active .prog-circle { background: linear-gradient(135deg, var(--olive-mid), var(--olive-light)); border-color: var(--olive-light); color: var(--olive-deep); font-weight: 700; box-shadow: 0 0 0 4px rgba(122,182,72,0.15); }
+.prog-label { font-size: 0.68rem; font-weight: 400; color: rgba(245,240,232,0.3); white-space: nowrap; transition: color 0.3s; }
+.prog-step.active .prog-label { color: var(--olive-pale); }
+.prog-step.done .prog-label { color: rgba(122,182,72,0.6); }
+.prog-line { flex: 1; height: 1px; background: rgba(122,182,72,0.12); margin: 0 0.8rem; transition: background 0.4s; }
+.prog-line.done { background: rgba(122,182,72,0.35); }
+.modal-body { padding: 2rem 2.5rem; }
+.step-panel { display: none; animation: stepIn 0.35s ease both; }
+.step-panel.active { display: block; }
+@keyframes stepIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+.form-group { margin-bottom: 1.6rem; }
+.form-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.4rem; }
+.location-field { display: flex; gap: 0.8rem; align-items: stretch; }
+.location-input { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(122,182,72,0.15); border-radius: 10px; padding: 0.85rem 1.1rem; color: var(--cream); font-family: var(--ff-body); font-size: 0.88rem; font-weight: 300; outline: none; transition: all 0.25s; }
+.location-input:focus { border-color: rgba(122,182,72,0.4); background: rgba(122,182,72,0.05); }
+.location-input::placeholder { color: rgba(245,240,232,0.25); }
+.location-btn { padding: 0 1.2rem; background: linear-gradient(135deg, rgba(74,124,47,0.3), rgba(122,182,72,0.15)); border: 1px solid rgba(122,182,72,0.3); border-radius: 10px; color: var(--olive-light); font-size: 0.8rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.25s; }
+.location-btn:hover { background: linear-gradient(135deg, rgba(74,124,47,0.5), rgba(122,182,72,0.25)); }
+.location-status { margin-top: 0.5rem; font-size: 0.72rem; font-weight: 300; color: rgba(245,240,232,0.4); display: flex; align-items: center; gap: 0.4rem; min-height: 1.2rem; }
+.location-status.loading { color: var(--gold-light); } .location-status.success { color: var(--olive-light); } .location-status.error { color: #e74c3c; }
+.option-grid { display: grid; gap: 0.7rem; }
+.option-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.option-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.option-card { position: relative; cursor: pointer; }
+.option-card input[type="radio"], .option-card input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+.option-label { display: flex; align-items: center; gap: 0.9rem; padding: 0.9rem 1.1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(122,182,72,0.1); border-radius: 12px; cursor: pointer; transition: all 0.25s; user-select: none; }
+.option-label:hover { background: rgba(122,182,72,0.06); border-color: rgba(122,182,72,0.25); }
+.option-card input:checked + .option-label { background: rgba(122,182,72,0.12); border-color: rgba(122,182,72,0.45); box-shadow: 0 0 0 1px rgba(122,182,72,0.2); }
+.opt-icon { font-size: 1.5rem; flex-shrink: 0; } .opt-info { flex: 1; } .opt-name { font-size: 0.85rem; font-weight: 500; color: var(--cream); } .opt-desc { font-size: 0.72rem; font-weight: 300; color: rgba(245,240,232,0.4); margin-top: 0.1rem; }
+.opt-check { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(122,182,72,0.25); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+.option-card input:checked + .option-label .opt-check { background: var(--olive-light); border-color: var(--olive-light); }
+.option-card input:checked + .option-label .opt-check::after { content: '✓'; font-size: 0.6rem; color: var(--olive-deep); font-weight: 700; }
+
+.count-field-wrap { background: rgba(10,20,5,0.6); border: 1px solid rgba(122,182,72,0.15); border-radius: 16px; overflow: hidden; }
+.count-stepper-row { display: flex; align-items: center; gap: 0; }
+.count-btn { width: 52px; height: 56px; background: rgba(122,182,72,0.07); border: none; color: var(--olive-light); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.count-btn:first-child { border-right: 1px solid rgba(122,182,72,0.1); }
+.count-btn:last-child { border-left: 1px solid rgba(122,182,72,0.1); }
+.count-btn:hover { background: rgba(122,182,72,0.15); color: var(--olive-pale); }
+.count-btn:active { transform: scale(0.95); }
+.count-center { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0; padding: 0.7rem 0.5rem; position: relative; }
+.count-display { font-family: var(--ff-display); font-size: 2.2rem; font-weight: 700; color: var(--olive-light); line-height: 1; letter-spacing: -0.02em; text-align: center; min-width: 80px; transition: opacity 0.15s; }
+.count-unit { font-size: 0.65rem; font-weight: 400; color: rgba(245,240,232,0.35); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.15rem; }
+.count-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(122,182,72,0.15), transparent); margin: 0; }
+.count-manual-row { display: flex; align-items: center; gap: 0; padding: 0.65rem 1rem; background: rgba(122,182,72,0.03); }
+.count-manual-label { font-size: 0.65rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,240,232,0.3); flex-shrink: 0; margin-right: 0.8rem; }
+.count-manual-input { flex: 1; background: rgba(122,182,72,0.05); border: 1px solid rgba(122,182,72,0.12); border-radius: 8px; padding: 0.5rem 0.9rem; color: var(--cream); font-family: var(--ff-body); font-size: 0.85rem; font-weight: 400; outline: none; transition: all 0.2s; width: 100%; -moz-appearance: textfield; }
+.count-manual-input::-webkit-outer-spin-button, .count-manual-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.count-manual-input:focus { border-color: rgba(122,182,72,0.4); background: rgba(122,182,72,0.09); box-shadow: 0 0 0 3px rgba(122,182,72,0.08); }
+.count-manual-input::placeholder { color: rgba(245,240,232,0.2); }
+.count-manual-apply { margin-left: 0.5rem; padding: 0.48rem 0.85rem; background: linear-gradient(135deg, rgba(74,124,47,0.4), rgba(122,182,72,0.2)); border: 1px solid rgba(122,182,72,0.3); border-radius: 7px; color: var(--olive-light); font-family: var(--ff-body); font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0; }
+.count-manual-apply:hover { background: linear-gradient(135deg, rgba(74,124,47,0.6), rgba(122,182,72,0.3)); border-color: rgba(122,182,72,0.5); }
+.count-fine-row { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem 1rem 0.65rem; }
+.count-fine-btn { padding: 0.3rem 0.7rem; background: rgba(122,182,72,0.06); border: 1px solid rgba(122,182,72,0.15); border-radius: 6px; color: rgba(245,240,232,0.5); font-family: var(--ff-body); font-size: 0.68rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.count-fine-btn:hover { background: rgba(122,182,72,0.14); border-color: rgba(122,182,72,0.3); color: var(--olive-light); }
+
+.sup-field-wrap { background: rgba(10,20,5,0.6); border: 1px solid rgba(122,182,72,0.15); border-radius: 16px; overflow: hidden; }
+.sup-stepper-row { display: flex; align-items: center; }
+.sup-btn { width: 52px; height: 56px; background: rgba(122,182,72,0.07); border: none; color: var(--olive-light); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.sup-btn:first-child { border-right: 1px solid rgba(122,182,72,0.1); }
+.sup-btn:last-child { border-left: 1px solid rgba(122,182,72,0.1); }
+.sup-btn:hover { background: rgba(122,182,72,0.15); color: var(--olive-pale); }
+.sup-btn:active { transform: scale(0.95); }
+.sup-center { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 0.7rem 0.5rem; }
+.sup-display { font-family: var(--ff-display); font-size: 2.2rem; font-weight: 700; color: var(--olive-light); line-height: 1; letter-spacing: -0.02em; text-align: center; }
+.sup-unit { font-size: 0.65rem; font-weight: 400; color: rgba(245,240,232,0.35); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.15rem; }
+.sup-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(122,182,72,0.15), transparent); }
+.sup-manual-row { display: flex; align-items: center; padding: 0.65rem 1rem; background: rgba(122,182,72,0.03); }
+.sup-manual-label { font-size: 0.65rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,240,232,0.3); flex-shrink: 0; margin-right: 0.8rem; }
+.sup-manual-input { flex: 1; background: rgba(122,182,72,0.05); border: 1px solid rgba(122,182,72,0.12); border-radius: 8px; padding: 0.5rem 0.9rem; color: var(--cream); font-family: var(--ff-body); font-size: 0.85rem; font-weight: 400; outline: none; transition: all 0.2s; -moz-appearance: textfield; }
+.sup-manual-input::-webkit-outer-spin-button, .sup-manual-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sup-manual-input:focus { border-color: rgba(122,182,72,0.4); background: rgba(122,182,72,0.09); box-shadow: 0 0 0 3px rgba(122,182,72,0.08); }
+.sup-manual-input::placeholder { color: rgba(245,240,232,0.2); }
+.sup-manual-apply { margin-left: 0.5rem; padding: 0.48rem 0.85rem; background: linear-gradient(135deg, rgba(74,124,47,0.4), rgba(122,182,72,0.2)); border: 1px solid rgba(122,182,72,0.3); border-radius: 7px; color: var(--olive-light); font-family: var(--ff-body); font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0; }
+.sup-manual-apply:hover { background: linear-gradient(135deg, rgba(74,124,47,0.6), rgba(122,182,72,0.3)); border-color: rgba(122,182,72,0.5); }
+.sup-fine-row { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem 1rem 0.65rem; }
+.sup-fine-btn { padding: 0.3rem 0.7rem; background: rgba(122,182,72,0.06); border: 1px solid rgba(122,182,72,0.15); border-radius: 6px; color: rgba(245,240,232,0.5); font-family: var(--ff-body); font-size: 0.68rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.sup-fine-btn:hover { background: rgba(122,182,72,0.14); border-color: rgba(122,182,72,0.3); color: var(--olive-light); }
+.sup-density-hint { padding: 0.5rem 1rem 0.7rem; font-size: 0.72rem; color: rgba(122,182,72,0.55); text-align: center; background: rgba(122,182,72,0.03); border-top: 1px solid rgba(122,182,72,0.07); }
+
+.irr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.irr-card { position: relative; cursor: pointer; }
+.irr-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+.irr-label { display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 1.1rem 1.2rem 1rem; background: linear-gradient(145deg, rgba(15,28,8,0.8), rgba(8,16,4,0.9)); border: 1px solid rgba(122,182,72,0.1); border-radius: 14px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); user-select: none; position: relative; overflow: hidden; }
+.irr-label::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(122,182,72,0.3), transparent); opacity: 0; transition: opacity 0.3s; }
+.irr-label:hover { background: linear-gradient(145deg, rgba(22,42,12,0.9), rgba(12,22,6,0.95)); border-color: rgba(122,182,72,0.3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(122,182,72,0.1); }
+.irr-label:hover::before { opacity: 1; }
+.irr-card input:checked + .irr-label { background: linear-gradient(145deg, rgba(30,55,15,0.95), rgba(18,34,8,0.98)); border-color: rgba(122,182,72,0.5); box-shadow: 0 0 0 1px rgba(122,182,72,0.25), 0 8px 28px rgba(74,124,47,0.2), inset 0 1px 0 rgba(122,182,72,0.1); transform: translateY(-1px); }
+.irr-card input:checked + .irr-label::before { opacity: 1; background: linear-gradient(90deg, transparent, rgba(122,182,72,0.7), transparent); }
+.irr-top-row { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 0.55rem; }
+.irr-icon-wrap { width: 38px; height: 38px; border-radius: 10px; background: rgba(122,182,72,0.08); border: 1px solid rgba(122,182,72,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: all 0.3s; flex-shrink: 0; }
+.irr-card input:checked + .irr-label .irr-icon-wrap { background: rgba(122,182,72,0.18); border-color: rgba(122,182,72,0.4); box-shadow: 0 4px 12px rgba(74,124,47,0.25); }
+.irr-radio-dot { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(122,182,72,0.2); display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0; }
+.irr-card input:checked + .irr-label .irr-radio-dot { background: var(--olive-light); border-color: var(--olive-light); box-shadow: 0 0 0 4px rgba(122,182,72,0.15); }
+.irr-radio-dot::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--olive-deep); opacity: 0; transition: opacity 0.2s; }
+.irr-card input:checked + .irr-label .irr-radio-dot::after { opacity: 1; }
+.irr-name { font-size: 0.88rem; font-weight: 600; color: var(--cream); margin-bottom: 0.2rem; line-height: 1.2; transition: color 0.2s; }
+.irr-card input:checked + .irr-label .irr-name { color: var(--olive-pale); }
+.irr-desc { font-size: 0.7rem; font-weight: 300; color: rgba(245,240,232,0.35); line-height: 1.4; transition: color 0.2s; }
+.irr-card input:checked + .irr-label .irr-desc { color: rgba(181,212,138,0.55); }
+.irr-badge { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.18rem 0.55rem; background: rgba(200,146,42,0.1); border: 1px solid rgba(200,146,42,0.2); border-radius: 20px; font-size: 0.6rem; font-weight: 600; color: var(--gold-light); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 0.45rem; opacity: 0; transition: opacity 0.3s; }
+.irr-card input:checked + .irr-label .irr-badge { opacity: 1; }
+
+.modal-footer { padding: 1.5rem 2.5rem 2rem; border-top: 1px solid rgba(122,182,72,0.08); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.btn-modal-back { padding: 0.75rem 1.6rem; background: transparent; border: 1px solid rgba(245,240,232,0.1); border-radius: 10px; color: rgba(245,240,232,0.5); font-family: var(--ff-body); font-size: 0.83rem; cursor: pointer; transition: all 0.25s; }
+.btn-modal-back:hover { border-color: rgba(245,240,232,0.25); color: var(--cream); }
+.btn-modal-next { padding: 0.75rem 1.8rem; background: linear-gradient(135deg, var(--olive-mid), var(--olive-light)); border: none; border-radius: 10px; color: var(--olive-deep); font-family: var(--ff-body); font-size: 0.83rem; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 16px rgba(74,124,47,0.35); }
+.btn-modal-next:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(74,124,47,0.5); }
+.btn-modal-finish { background: linear-gradient(135deg, #c8922a, #e6b84a); box-shadow: 0 4px 16px rgba(200,146,42,0.4); color: #1a1005; }
+.btn-modal-finish:hover { box-shadow: 0 8px 24px rgba(200,146,42,0.55); }
+
+/* RTL */
+html[dir="rtl"] { font-family: 'Cairo', sans-serif; }
+html[dir="rtl"] body { font-family: 'Cairo', sans-serif; }
+html[dir="rtl"] .nav-logo-text, html[dir="rtl"] .modal-title, html[dir="rtl"] .pp-hero-name, html[dir="rtl"] .pp-block-header, html[dir="rtl"] .pp-topbar-logo, html[dir="rtl"] .arch-title, html[dir="rtl"] .section-title, html[dir="rtl"] .profile-section-title { font-family: 'Cairo', sans-serif; font-style: normal; }
+html[dir="rtl"] nav { flex-direction: row-reverse; }
+html[dir="rtl"] .nav-links { flex-direction: row-reverse; }
+html[dir="rtl"] .nav-actions { flex-direction: row-reverse; }
+html[dir="rtl"] .hero-content { direction: rtl; }
+html[dir="rtl"] .hero-region { flex-direction: row-reverse; }
+html[dir="rtl"] .hero-cta-btn { flex-direction: row-reverse; }
+html[dir="rtl"] .hero-cta-arrow { transform: rotate(180deg); }
+html[dir="rtl"] .hero-cta-btn:hover .hero-cta-arrow { transform: rotate(180deg) translateX(4px); }
+html[dir="rtl"] .section-tag { flex-direction: row-reverse; }
+html[dir="rtl"] .section-tag::before { display: none; }
+html[dir="rtl"] .section-tag::after { content: ''; display: block; width: 28px; height: 1px; background: var(--gold-light); }
+html[dir="rtl"] .context-grid { direction: rtl; }
+html[dir="rtl"] .problem-item { flex-direction: row-reverse; text-align: right; }
+html[dir="rtl"] .problem-item:hover { transform: translateX(-4px); }
+html[dir="rtl"] .goal-item { flex-direction: row-reverse; text-align: right; }
+html[dir="rtl"] .result-card { flex-direction: row-reverse; }
+html[dir="rtl"] .result-card:hover { transform: translateX(-4px); }
+html[dir="rtl"] .goals-inner { direction: rtl; }
+html[dir="rtl"] .arch-pipeline::before { left: auto; right: 50%; transform: translateX(50%); }
+html[dir="rtl"] .arch-step { flex-direction: row-reverse !important; }
+html[dir="rtl"] .arch-node { align-items: flex-start !important; text-align: right !important; }
+html[dir="rtl"] .arch-step:nth-child(even) .arch-node { align-items: flex-end !important; text-align: left !important; }
+html[dir="rtl"] .footer-top { flex-direction: row-reverse; direction: rtl; }
+html[dir="rtl"] .footer-bottom { flex-direction: row-reverse; }
+html[dir="rtl"] .footer-info-item { flex-direction: row-reverse; }
+html[dir="rtl"] .profile-section-header { flex-direction: row-reverse; }
+html[dir="rtl"] .profile-section-title { flex-direction: row-reverse; }
+html[dir="rtl"] .pc-header { flex-direction: row-reverse; }
+html[dir="rtl"] .pc-row { flex-direction: row-reverse; }
+html[dir="rtl"] .pc-location { flex-direction: row-reverse; }
+html[dir="rtl"] .pc-name { text-align: right; }
+html[dir="rtl"] .pc-varieties { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-topbar { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-back-btn::before { content: '→'; }
+html[dir="rtl"] .pp-back-btn:hover { transform: translateX(3px); }
+html[dir="rtl"] .pp-hero { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-hero::after { right: auto; left: 3rem; }
+html[dir="rtl"] .pp-hero-info { text-align: right; }
+html[dir="rtl"] .pp-hero-location { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-hero-actions { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-block-header { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-row { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-weather-header { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-weather-live { flex-direction: row-reverse; }
+html[dir="rtl"] .pp-weather-title { flex-direction: row-reverse; }
+html[dir="rtl"] .ppw-main-block { flex-direction: row-reverse; }
+html[dir="rtl"] .ppw-temp-block { text-align: right; }
+html[dir="rtl"] .ppw-wind-label { flex-direction: row-reverse; }
+html[dir="rtl"] .ppw-footer { flex-direction: row-reverse; }
+html[dir="rtl"] .modal-header { flex-direction: row-reverse; }
+html[dir="rtl"] .modal-title-wrap { flex-direction: row-reverse; }
+html[dir="rtl"] .modal-progress { flex-direction: row-reverse; }
+html[dir="rtl"] .prog-step { flex-direction: row-reverse; }
+html[dir="rtl"] .modal-footer { flex-direction: row-reverse; }
+html[dir="rtl"] .option-label { flex-direction: row-reverse; }
+html[dir="rtl"] .opt-info { text-align: right; }
+html[dir="rtl"] .location-field { flex-direction: row-reverse; }
+html[dir="rtl"] .form-label { flex-direction: row-reverse; }
+html[dir="rtl"] .irr-label { align-items: flex-end; }
+html[dir="rtl"] .irr-top-row { flex-direction: row-reverse; }
+html[dir="rtl"] .irr-name, html[dir="rtl"] .irr-desc { text-align: right; }
+html[dir="rtl"] .count-stepper-row { flex-direction: row-reverse; }
+html[dir="rtl"] .count-btn:first-child { border-right: none; border-left: 1px solid rgba(122,182,72,0.1); }
+html[dir="rtl"] .count-btn:last-child { border-left: none; border-right: 1px solid rgba(122,182,72,0.1); }
+html[dir="rtl"] .count-manual-row { flex-direction: row-reverse; }
+html[dir="rtl"] .count-manual-label { margin-right: 0; margin-left: 0.8rem; }
+html[dir="rtl"] .count-manual-apply { margin-left: 0; margin-right: 0.5rem; }
+html[dir="rtl"] .sup-stepper-row { flex-direction: row-reverse; }
+html[dir="rtl"] .sup-btn:first-child { border-right: none; border-left: 1px solid rgba(122,182,72,0.1); }
+html[dir="rtl"] .sup-btn:last-child { border-left: none; border-right: 1px solid rgba(122,182,72,0.1); }
+html[dir="rtl"] .sup-manual-row { flex-direction: row-reverse; }
+html[dir="rtl"] .sup-manual-label { margin-right: 0; margin-left: 0.8rem; }
+html[dir="rtl"] .sup-manual-apply { margin-left: 0; margin-right: 0.5rem; }
+html[dir="rtl"] .nud-item-connect { transform: none !important; }
+
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .context-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .goals-inner { grid-template-columns: 1fr; }
+  .arch-pipeline::before { left: 35px; transform: none; }
+  .arch-step, .arch-step:nth-child(even) { flex-direction: row; gap: 1.5rem; }
+  .arch-node, .arch-step:nth-child(even) .arch-node { align-items: flex-start; text-align: left; }
+  html[dir="rtl"] .arch-step, html[dir="rtl"] .arch-step:nth-child(even) { flex-direction: row-reverse; }
+  html[dir="rtl"] .arch-pipeline::before { left: auto; right: 35px; transform: none; }
+  .hero-stats { flex-wrap: wrap; }
+  .hero-stat { min-width: 50%; }
+  .hero-branch { display: none; }
+  .pp-main-grid { grid-template-columns: 1fr; }
+  .pp-weather-block { position: static; }
+  .pp-stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .pp-hero { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+  .pp-hero::after { display: none; }
+  .pp-hero-actions { justify-content: center; }
+  html[dir="rtl"] .pp-hero { flex-direction: column; }
+  .nav-lang-btn .lang-label { display: none; }
+  .irr-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .hero-stats { flex-direction: column; }
+  .hero-stat { border-right: none; border-bottom: 1px solid rgba(122,182,72,0.1); }
+  .hero-stat:last-child { border-bottom: none; }
+  .footer-top { flex-direction: column; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .modal { border-radius: 16px; }
+  .modal-header, .modal-body, .modal-footer { padding-left: 1.4rem; padding-right: 1.4rem; }
+  .modal-progress { padding-left: 1.4rem; padding-right: 1.4rem; }
+  .option-grid.cols-2, .option-grid.cols-3 { grid-template-columns: 1fr; }
+  .pp-stats-bar { grid-template-columns: 1fr 1fr; }
+  .irr-grid { grid-template-columns: 1fr; }
+  .count-manual-row, .sup-manual-row { flex-wrap: wrap; gap: 0.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════ NAVBAR ════ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">🌿</div>
+    <span class="nav-logo-text">Irri<span>Olive</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#contexte" data-i18n="nav_context">Contexte</a></li>
+    <li><a href="#architecture" data-i18n="nav_arch">Architecture</a></li>
+    <li><a href="#objectifs" data-i18n="nav_goals">Objectifs</a></li>
+    <li><a href="#profileSection" data-i18n="nav_profiles">Mes Profils</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="nav-lang-btn" id="langBtn" onclick="toggleLang()" title="Basculer FR / العربية">
+      <span class="lang-flag" id="langFlag">🇲🇦</span>
+      <span class="lang-label" id="langLabel">عربي</span>
+    </button>
+    <div class="nav-user-btn" id="navUserBtn" tabindex="0" onclick="this.classList.toggle('open')">
+      <div class="nav-user-avatar" id="navUserAvatar">A</div>
+      <div class="nav-user-dropdown" id="navUserDropdown">
+        <div class="nud-header">
+          <div class="nud-avatar-lg">A</div>
+          <div class="nud-info">
+            <div class="nud-name">Amine</div>
+            <div class="nud-email">aminelemzibri@gmail.com</div>
+          </div>
+        </div>
+      
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ════ PROFILE SECTION ════ -->
+<div class="profile-section" id="profileSection" style="display:none;">
+  <div class="profile-section-header">
+    <div class="profile-section-title">
+      🫒 <span data-i18n="ps_title">Mes Oliveraies</span>
+      <span class="ps-count"><span id="profileCount">0</span> / 6</span>
+    </div>
+    <button class="profile-add-btn" id="addProfileBtn" onclick="openModal()" data-i18n="ps_add">＋ Ajouter une oliveraie</button>
+  </div>
+  <div class="profiles-grid" id="profilesGrid"></div>
+</div>
+
+<!-- ════ HERO ════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-circle hero-circle-1"></div>
+  <div class="hero-circle hero-circle-2"></div>
+  <div class="hero-circle hero-circle-3"></div>
+  <div class="hero-branch">🫒</div>
+  <div class="pulse-dot pulse-dot-1"></div>
+  <div class="pulse-dot pulse-dot-2"></div>
+  <div class="pulse-dot pulse-dot-3"></div>
+  <div class="hero-content">
+    <h1 class="hero-title" data-i18n="hero_title">Système intelligent d'irrigation de l'olivier</h1>
+    <div class="hero-region">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      <span><strong data-i18n="hero_region_val">El Kelaa des Sraghna, Maroc</strong></span>
+    </div>
+    <div class="hero-cta-wrap">
+      <button class="hero-cta-btn" onclick="openModal()">
+        <span class="hero-cta-icon">🌿</span>
+        <span data-i18n="hero_cta">Créer mon profil oliveraie</span>
+        <span class="hero-cta-arrow">→</span>
+      </button>
+      <div class="hero-cta-hint" data-i18n="hero_hint">Configurez votre oliveraie en 4 étapes · Météo en temps réel incluse</div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="stat-num">40<span>%</span></div><div class="stat-label" data-i18n="stat1">Économie d'eau estimée</div></div>
+    <div class="hero-stat"><div class="stat-num">24<span>/7</span></div><div class="stat-label" data-i18n="stat2">Surveillance en temps réel</div></div>
+    <div class="hero-stat"><div class="stat-num">6<span>+</span></div><div class="stat-label" data-i18n="stat3">Types de capteurs IoT</div></div>
+    <div class="hero-stat"><div class="stat-num">95<span>%</span></div><div class="stat-label" data-i18n="stat4">Précision du modèle ML</div></div>
+  </div>
+</section>
+
+<!-- ════ CONTEXTE ════ -->
+<section class="section-context" id="contexte">
+  <div class="context-grid">
+    <div class="reveal">
+      <p class="section-tag" data-i18n="ctx_tag">Contexte & Problématique</p>
+      <h2 class="section-title" data-i18n="ctx_title">L'olivier au cœur d'une région <em>semi-aride</em></h2>
+      <p class="section-text" data-i18n="ctx_p1">La région d'El Kelaa des Sraghna est l'une des premières zones oléicoles du Maroc. Avec un climat semi-aride et des ressources hydriques limitées, l'irrigation traditionnelle génère d'importants gaspillages et affecte le rendement des oliveraies.</p>
+      <p class="section-text" data-i18n="ctx_p2">Ce projet propose un système intelligent capable d'analyser les données environnementales en temps réel et de déclencher automatiquement l'irrigation uniquement quand cela est nécessaire, grâce à des algorithmes de Machine Learning.</p>
+    </div>
+    <div class="context-card reveal">
+      <ul class="problem-list">
+        <li class="problem-item"><span class="problem-icon"></span><div class="problem-text"><strong data-i18n="prob1_title">Stress hydrique croissant</strong><span data-i18n="prob1_desc">Les précipitations annuelles sont insuffisantes et irrégulières pour couvrir les besoins de l'olivier</span></div></li>
+        <li class="problem-item"><span class="problem-icon"></span><div class="problem-text"><strong data-i18n="prob2_title">Irrigation empirique peu efficace</strong><span data-i18n="prob2_desc">Les pratiques actuelles basées sur l'expérience entraînent un sur-arrosage ou un sous-arrosage fréquent</span></div></li>
+        <li class="problem-item"><span class="problem-icon"></span><div class="problem-text"><strong data-i18n="prob3_title">Impact sur le rendement</strong><span data-i18n="prob3_desc">Un mauvais pilotage de l'eau réduit la qualité de l'huile d'olive et la productivité des arbres</span></div></li>
+        <li class="problem-item"><span class="problem-icon"></span><div class="problem-text"><strong data-i18n="prob4_title">Solution proposée : automatisation intelligente</strong><span data-i18n="prob4_desc">Capteurs connectés + algorithmes ML pour une irrigation précise, automatique et économe</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════ ARCHITECTURE ════ -->
+<section class="section-arch" id="architecture">
+  <div class="arch-header reveal">
+    <p class="section-tag" style="justify-content:center;" data-i18n="arch_tag">Architecture du système</p>
+    <h2 class="section-title" data-i18n="arch_title">De la parcelle au <em>tableau de bord</em></h2>
+  </div>
+  <div class="arch-pipeline">
+    <div class="arch-step reveal"><div class="arch-node"><div class="arch-num" data-i18n="layer01">Couche 01</div><div class="arch-title" data-i18n="arch1_title">Acquisition de données</div><div class="arch-desc" data-i18n="arch1_desc">Réseau de capteurs IoT (humidité sol, température, pluviométrie, luminosité) installés dans l'oliveraie. Transmission sans fil via protocole MQTT.</div></div><div class="arch-center">🌱</div><div class="arch-info"></div></div>
+    <div class="arch-step reveal"><div class="arch-info"></div><div class="arch-center">⚙️</div><div class="arch-node"><div class="arch-num" data-i18n="layer02">Couche 02</div><div class="arch-title" data-i18n="arch2_title">Traitement & Stockage</div><div class="arch-desc" data-i18n="arch2_desc">Passerelle locale (Raspberry Pi) pour l'agrégation, le prétraitement des données et leur stockage dans une base SQLite.</div></div></div>
+    <div class="arch-step reveal"><div class="arch-node"><div class="arch-num" data-i18n="layer03">Couche 03</div><div class="arch-title" data-i18n="arch3_title">Intelligence Artificielle</div><div class="arch-desc" data-i18n="arch3_desc">Modèles ML entraînés pour prédire les besoins hydriques de l'olivier selon les conditions météo, le stade phénologique et l'état du sol.</div></div><div class="arch-center">🧠</div><div class="arch-info"></div></div>
+    <div class="arch-step reveal"><div class="arch-info"></div><div class="arch-center">💧</div><div class="arch-node"><div class="arch-num" data-i18n="layer04">Couche 04</div><div class="arch-title" data-i18n="arch4_title">Actionnement automatique</div><div class="arch-desc" data-i18n="arch4_desc">Déclenchement automatique des vannes d'irrigation en fonction des décisions du modèle ML, avec possibilité de contrôle manuel via l'application.</div></div></div>
+    <div class="arch-step reveal"><div class="arch-node"><div class="arch-num" data-i18n="layer05">Couche 05</div><div class="arch-title" data-i18n="arch5_title">Supervision & Alertes</div><div class="arch-desc" data-i18n="arch5_desc">Tableau de bord web temps réel, historiques, visualisations graphiques et alertes par email pour l'agriculteur.</div></div><div class="arch-center">📊</div><div class="arch-info"></div></div>
+  </div>
+</section>
+
+<!-- ════ OBJECTIFS ════ -->
+<section class="section-goals" id="objectifs">
+  <div class="goals-bg"></div>
+  <div class="goals-inner">
+    <div class="goals-left reveal">
+      <p class="section-tag" data-i18n="goals_tag">Objectifs du projet</p>
+      <h2 class="section-title" data-i18n="goals_title">Ce que le système <em>accomplit</em></h2>
+      <div class="goal-item"><div class="goal-number">01</div><div class="goal-text"><strong data-i18n="g1_title">Économiser l'eau</strong><span data-i18n="g1_desc">Réduire significativement le volume d'eau utilisé grâce à une irrigation de précision basée sur les données réelles du sol et de la météo.</span></div></div>
+      <div class="goal-item"><div class="goal-number">02</div><div class="goal-text"><strong data-i18n="g2_title">Améliorer le rendement oléicole</strong><span data-i18n="g2_desc">Fournir l'eau au bon moment et en bonne quantité pour optimiser la croissance et la qualité des olives.</span></div></div>
+      <div class="goal-item"><div class="goal-number">03</div><div class="goal-text"><strong data-i18n="g3_title">Automatiser la gestion</strong><span data-i18n="g3_desc">Libérer l'agriculteur des décisions manuelles d'irrigation grâce à un système entièrement autonome et intelligent.</span></div></div>
+      <div class="goal-item"><div class="goal-number">04</div><div class="goal-text"><strong data-i18n="g4_title">Fournir une aide à la décision</strong><span data-i18n="g4_desc">Offrir une interface de suivi claire avec des indicateurs, des graphiques et des alertes compréhensibles pour l'exploitant.</span></div></div>
+    </div>
+    <div class="goals-right reveal">
+      <div class="result-card"><div class="rc-icon"></div><div><div class="rc-val">−40%</div><div class="rc-label" data-i18n="res1">de consommation d'eau estimée</div></div></div>
+      <div class="result-card"><div class="rc-icon"></div><div><div class="rc-val">+22%</div><div class="rc-label" data-i18n="res2">de rendement en olives projeté</div></div></div>
+      <div class="result-card"><div class="rc-icon"></div><div><div class="rc-val">&lt; 2s</div><div class="rc-label" data-i18n="res3">de latence capteur → action</div></div></div>
+      <div class="result-card"><div class="rc-icon"></div><div><div class="rc-val">95%</div><div class="rc-label" data-i18n="res4">de précision du modèle ML (test)</div></div></div>
+      <div class="result-card"><div class="rc-icon"></div><div><div class="rc-val">24/7</div><div class="rc-label" data-i18n="res5">surveillance sans intervention humaine</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo" style="display:flex;align-items:center;gap:0.7rem;text-decoration:none;margin-bottom:0.8rem;">
+        <div class="nav-logo-icon">🌿</div>
+        <span class="nav-logo-text">Irri<span>Olive</span></span>
+      </a>
+      <p data-i18n="footer_desc">Système intelligent d'irrigation de l'olivier basé sur l'IoT et le Machine Learning.</p>
+    </div>
+    <div class="footer-info">
+      <div class="footer-info-item"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span data-i18n="footer_loc">El Kelaa des Sraghna, Maroc</span></div>
+      <div class="footer-info-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-i18n="footer_year">Année universitaire 2025–2026</span></div>
+      <div class="footer-info-item"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span data-i18n="footer_school">École supérieure de technologies — Kelaa des Sraghna</span></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy" data-i18n="footer_copy">© 2026 IrriOlive — Projet de fin d'études</span>
+    <span class="footer-uni">🌿 IoT · Machine Learning · Agriculture de précision</span>
+  </div>
+</footer>
+
+<!-- ════ PROFILE DETAIL PAGE ════ -->
+<div class="profile-page" id="profilePage">
+  <div class="pp-bg"></div>
+  <div class="pp-grid-bg"></div>
+  <div class="pp-content">
+    <div class="pp-topbar">
+      <button class="pp-back-btn" onclick="closeProfilePage()" data-i18n="pp_back">Retour à mes oliveraies</button>
+      <div class="pp-topbar-logo">Irri<span>Olive</span></div>
+    </div>
+    <div id="ppInner"></div>
+  </div>
+</div>
+
+<!-- ════ MODAL ════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon">🌾</div>
+        <div>
+          <div class="modal-title" data-i18n="modal_title">Configurer mon profil</div>
+          <div class="modal-subtitle" data-i18n="modal_sub">Personnalisez votre oliveraie en quelques étapes</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-progress">
+      <div class="prog-step active" id="ps-1"><div class="prog-circle">1</div><div class="prog-label" data-i18n="step1_label">Localisation</div></div>
+      <div class="prog-line" id="pl-1"></div>
+      <div class="prog-step" id="ps-2"><div class="prog-circle">2</div><div class="prog-label" data-i18n="step2_label">Type de Sol</div></div>
+      <div class="prog-line" id="pl-2"></div>
+      <div class="prog-step" id="ps-3"><div class="prog-circle">3</div><div class="prog-label" data-i18n="step3_label">Variétés & Terrain</div></div>
+      <div class="prog-line" id="pl-3"></div>
+      <div class="prog-step" id="ps-4"><div class="prog-circle">4</div><div class="prog-label" data-i18n="step4_label">Irrigation</div></div>
+    </div>
+    <div class="modal-body">
+
+      <!-- STEP 1 -->
+      <div class="step-panel active" id="step-1">
+        <div class="form-group">
+          <div class="form-label"><span>📍</span> <span data-i18n="f_region">Région / Localisation</span></div>
+          <div class="location-field">
+            <input type="text" class="location-input" id="regionInput" placeholder="Ex: El Kelaa des Sraghna, Maroc" />
+            <button class="location-btn" onclick="detectLocation()"><span>🛰️</span> <span data-i18n="f_gps">Ma position</span></button>
+          </div>
+          <div class="location-status" id="locationStatus"></div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-panel" id="step-2">
+        <div class="form-group">
+          <div class="form-label"><span>🪨</span> <span data-i18n="f_soil">Type de sol principal</span></div>
+          <div class="option-grid cols-2">
+            <div class="option-card"><input type="radio" name="soil" id="s1" value="calcaire"><label class="option-label" for="s1"><span class="opt-icon">⬜</span><div class="opt-info"><div class="opt-name" data-i18n="s_calc">Sol calcaire</div><div class="opt-desc" data-i18n="s_calc_d">Riche en calcium, bien drainé</div></div><div class="opt-check"></div></label></div>
+            <div class="option-card"><input type="radio" name="soil" id="s2" value="argileux"><label class="option-label" for="s2"><span class="opt-icon">🟫</span><div class="opt-info"><div class="opt-name" data-i18n="s_clay">Sol argileux</div><div class="opt-desc" data-i18n="s_clay_d">Forte rétention d'eau</div></div><div class="opt-check"></div></label></div>
+            <div class="option-card"><input type="radio" name="soil" id="s3" value="sableux"><label class="option-label" for="s3"><span class="opt-icon">🏝️</span><div class="opt-info"><div class="opt-name" data-i18n="s_sand">Sol sableux</div><div class="opt-desc" data-i18n="s_sand_d">Drainage rapide, léger</div></div><div class="opt-check"></div></label></div>
+            <div class="option-card"><input type="radio" name="soil" id="s4" value="alluvial"><label class="option-label" for="s4"><span class="opt-icon">🌊</span><div class="opt-info"><div class="opt-name" data-i18n="s_alluvial">Sol alluvial</div><div class="opt-desc" data-i18n="s_alluvial_d">Fertile, apport fluvial</div></div><div class="opt-check"></div></label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-panel" id="step-3">
+        <div class="form-group">
+          <div class="form-label"><span>🫒</span> <span data-i18n="f_trees">Variété(s) d'olivier cultivée(s)</span></div>
+          <div class="option-grid cols-2">
+            <div class="option-card"><input type="checkbox" id="t1" value="menara"><label class="option-label" for="t1"><span class="opt-icon">🇲🇦</span><div class="opt-info"><div class="opt-name">Menara</div><div class="opt-desc" data-i18n="t1_d">Variété marocaine rustique, double aptitude</div></div><div class="opt-check"></div></label></div>
+            <div class="option-card"><input type="checkbox" id="t2" value="itoline"><label class="option-label" for="t2"><span class="opt-icon">🫒</span><div class="opt-info"><div class="opt-name">Itoline</div><div class="opt-desc" data-i18n="t2_d">Huile légère, maturité précoce</div></div><div class="opt-check"></div></label></div>
+            <div class="option-card"><input type="checkbox" id="t3" value="arbikouina"><label class="option-label" for="t3"><span class="opt-icon">🌿</span><div class="opt-info"><div class="opt-name">Arbikouina</div><div class="opt-desc" data-i18n="t3_d">Adaptée à la haute densité</div></div><div class="opt-check"></div></label></div>
+            <div class="option-card"><input type="checkbox" id="t4" value="haouziya"><label class="option-label" for="t4"><span class="opt-icon">🌅</span><div class="opt-info"><div class="opt-name">Haouziya</div><div class="opt-desc" data-i18n="t4_d">Grosse olive, aptitude de table</div></div><div class="opt-check"></div></label></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span>🌳</span> <span data-i18n="f_count">Nombre d'oliviers</span></div>
+          <div class="count-field-wrap">
+            <div class="count-stepper-row">
+              <button class="count-btn" onclick="changeCount(-50)" aria-label="−50">−</button>
+              <div class="count-center">
+                <div class="count-display" id="olivierCount">100</div>
+                <div class="count-unit" data-i18n="f_trees_unit">oliviers</div>
+              </div>
+              <button class="count-btn" onclick="changeCount(50)" aria-label="+50">＋</button>
+            </div>
+            <div class="count-fine-row">
+              <button class="count-fine-btn" onclick="changeCount(-10)">−10</button>
+              <button class="count-fine-btn" onclick="changeCount(-1)">−1</button>
+              <button class="count-fine-btn" onclick="changeCount(1)">+1</button>
+              <button class="count-fine-btn" onclick="changeCount(10)">+10</button>
+            </div>
+            <div class="count-divider"></div>
+            <div class="count-manual-row">
+              <span class="count-manual-label" data-i18n="f_manual">Saisie libre</span>
+              <input type="number" class="count-manual-input" id="olivierManualInput" min="1" max="99999" placeholder="Ex : 347" oninput="syncCountFromInput()" />
+              <button class="count-manual-apply" onclick="applyCountManual()" data-i18n="f_apply">✓ OK</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span>📐</span> <span data-i18n="f_area">Superficie du terrain (hectares)</span></div>
+          <div class="sup-field-wrap">
+            <div class="sup-stepper-row">
+              <button class="sup-btn" onclick="changeSuperficie(-0.5)" aria-label="−0.5">−</button>
+              <div class="sup-center">
+                <div class="sup-display" id="superficieVal">5.0</div>
+                <div class="sup-unit" data-i18n="f_area_unit">hectares</div>
+              </div>
+              <button class="sup-btn" onclick="changeSuperficie(0.5)" aria-label="+0.5">＋</button>
+            </div>
+            <div class="sup-fine-row">
+              <button class="sup-fine-btn" onclick="changeSuperficie(-1)">−1</button>
+              <button class="sup-fine-btn" onclick="changeSuperficie(-0.1)">−0.1</button>
+              <button class="sup-fine-btn" onclick="changeSuperficie(0.1)">+0.1</button>
+              <button class="sup-fine-btn" onclick="changeSuperficie(1)">+1</button>
+            </div>
+            <div class="sup-divider"></div>
+            <div class="sup-manual-row">
+              <span class="sup-manual-label" data-i18n="f_manual">Saisie libre</span>
+              <input type="number" class="sup-manual-input" id="supManualInput" min="0.1" max="9999" step="0.1" placeholder="Ex : 12.5" oninput="syncSupFromInput()" />
+              <button class="sup-manual-apply" onclick="applySupManual()" data-i18n="f_apply">✓ OK</button>
+            </div>
+            <div class="sup-density-hint">≈ <span id="superficieDensity">20</span> <span data-i18n="f_density">arbres/ha · densité estimée</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-panel" id="step-4">
+        <div class="form-group">
+          <div class="form-label"><span>💧</span> <span data-i18n="f_irr">Méthode d'irrigation principale</span></div>
+          <div class="irr-grid">
+            <div class="irr-card"><input type="radio" name="irrigation" id="i1" value="goutte-a-goutte"><label class="irr-label" for="i1"><div class="irr-top-row"><div class="irr-icon-wrap">💧</div><div class="irr-radio-dot"></div></div><div class="irr-name" data-i18n="i_drip">Goutte-à-goutte</div><div class="irr-desc" data-i18n="i_drip_d">Précision maximale, −50% eau</div><div class="irr-badge">⭐ Recommandé</div></label></div>
+            <div class="irr-card"><input type="radio" name="irrigation" id="i2" value="micro-aspersion"><label class="irr-label" for="i2"><div class="irr-top-row"><div class="irr-icon-wrap">🌀</div><div class="irr-radio-dot"></div></div><div class="irr-name" data-i18n="i_micro">Micro-aspersion</div><div class="irr-desc" data-i18n="i_micro_d">Couverture uniforme</div><div class="irr-badge"></div></label></div>
+            <div class="irr-card"><input type="radio" name="irrigation" id="i3" value="aspersion"><label class="irr-label" for="i3"><div class="irr-top-row"><div class="irr-icon-wrap">🚿</div><div class="irr-radio-dot"></div></div><div class="irr-name" data-i18n="i_spray">Aspersion</div><div class="irr-desc" data-i18n="i_spray_d">Grands vergers</div><div class="irr-badge"></div></label></div>
+            <div class="irr-card"><input type="radio" name="irrigation" id="i4" value="gravitaire"><label class="irr-label" for="i4"><div class="irr-top-row"><div class="irr-icon-wrap">🏞️</div><div class="irr-radio-dot"></div></div><div class="irr-name" data-i18n="i_grav">Gravitaire / Séguia</div><div class="irr-desc" data-i18n="i_grav_d">Traditionnel</div><div class="irr-badge"></div></label></div>
+            <div class="irr-card"><input type="radio" name="irrigation" id="i5" value="subsurface"><label class="irr-label" for="i5"><div class="irr-top-row"><div class="irr-icon-wrap">🔬</div><div class="irr-radio-dot"></div></div><div class="irr-name" data-i18n="i_sub">Sous-surface</div><div class="irr-desc" data-i18n="i_sub_d">Évaporation nulle</div><div class="irr-badge"></div></label></div>
+            <div class="irr-card"><input type="radio" name="irrigation" id="i6" value="bassins"><label class="irr-label" for="i6"><div class="irr-top-row"><div class="irr-icon-wrap">🪣</div><div class="irr-radio-dot"></div></div><div class="irr-name" data-i18n="i_basin">Bassins / Cuvettes</div><div class="irr-desc" data-i18n="i_basin_d">Simple, autour de l'arbre</div><div class="irr-badge"></div></label></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-back" id="btnBack" onclick="prevStep()" style="visibility:hidden;" data-i18n="btn_back">← Retour</button>
+      <div style="font-size:0.72rem;color:rgba(245,240,232,0.3);" id="stepIndicator">Étape 1 sur 4</div>
+      <button class="btn-modal-next" id="btnNext" onclick="nextStep()" data-i18n="btn_next">Suivant →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const I18N = {
+  fr: {
+    nav_context:'Contexte', nav_arch:'Architecture', nav_goals:'Objectifs',
+    nav_profiles:'Mes Profils',
+    ps_title:'Mes Oliveraies', ps_add:'＋ Ajouter une oliveraie',
+    hero_title:'Système intelligent d\'irrigation de l\'olivier',
+    hero_region_val:'El Kelaa des Sraghna, Maroc',
+    hero_cta:'Créer mon profil oliveraie',
+    hero_hint:'Configurez votre oliveraie en 4 étapes · Météo en temps réel incluse',
+    stat1:'Économie d\'eau estimée', stat2:'Surveillance en temps réel',
+    stat3:'Types de capteurs IoT', stat4:'Précision du modèle ML',
+    ctx_tag:'Contexte & Problématique',
+    ctx_title:'L\'olivier au cœur d\'une région semi-aride',
+    ctx_p1:'La région d\'El Kelaa des Sraghna est l\'une des premières zones oléicoles du Maroc. Avec un climat semi-aride et des ressources hydriques limitées, l\'irrigation traditionnelle génère d\'importants gaspillages et affecte le rendement des oliveraies.',
+    ctx_p2:'Ce projet propose un système intelligent capable d\'analyser les données environnementales en temps réel et de déclencher automatiquement l\'irrigation uniquement quand cela est nécessaire, grâce à des algorithmes de Machine Learning.',
+    prob1_title:'Stress hydrique croissant', prob1_desc:'Les précipitations annuelles sont insuffisantes et irrégulières pour couvrir les besoins de l\'olivier',
+    prob2_title:'Irrigation empirique peu efficace', prob2_desc:'Les pratiques actuelles basées sur l\'expérience entraînent un sur-arrosage ou un sous-arrosage fréquent',
+    prob3_title:'Impact sur le rendement', prob3_desc:'Un mauvais pilotage de l\'eau réduit la qualité de l\'huile d\'olive et la productivité des arbres',
+    prob4_title:'Solution proposée : automatisation intelligente', prob4_desc:'Capteurs connectés + algorithmes ML pour une irrigation précise, automatique et économe',
+    arch_tag:'Architecture du système', arch_title:'De la parcelle au tableau de bord',
+    layer01:'Couche 01', layer02:'Couche 02', layer03:'Couche 03', layer04:'Couche 04', layer05:'Couche 05',
+    arch1_title:'Acquisition de données', arch1_desc:'Réseau de capteurs IoT (humidité sol, température, pluviométrie, luminosité) installés dans l\'oliveraie. Transmission sans fil via protocole MQTT.',
+    arch2_title:'Traitement & Stockage', arch2_desc:'Passerelle locale (Raspberry Pi) pour l\'agrégation, le prétraitement des données et leur stockage dans une base SQLite.',
+    arch3_title:'Intelligence Artificielle', arch3_desc:'Modèles ML entraînés pour prédire les besoins hydriques de l\'olivier selon les conditions météo, le stade phénologique et l\'état du sol.',
+    arch4_title:'Actionnement automatique', arch4_desc:'Déclenchement automatique des vannes d\'irrigation en fonction des décisions du modèle ML, avec possibilité de contrôle manuel via l\'application.',
+    arch5_title:'Supervision & Alertes', arch5_desc:'Tableau de bord web temps réel, historiques, visualisations graphiques et alertes par email pour l\'agriculteur.',
+    goals_tag:'Objectifs du projet', goals_title:'Ce que le système accomplit',
+    g1_title:'Économiser l\'eau', g1_desc:'Réduire significativement le volume d\'eau utilisé grâce à une irrigation de précision basée sur les données réelles du sol et de la météo.',
+    g2_title:'Améliorer le rendement oléicole', g2_desc:'Fournir l\'eau au bon moment et en bonne quantité pour optimiser la croissance et la qualité des olives.',
+    g3_title:'Automatiser la gestion', g3_desc:'Libérer l\'agriculteur des décisions manuelles d\'irrigation grâce à un système entièrement autonome et intelligent.',
+    g4_title:'Fournir une aide à la décision', g4_desc:'Offrir une interface de suivi claire avec des indicateurs, des graphiques et des alertes compréhensibles pour l\'exploitant.',
+    res1:'de consommation d\'eau estimée', res2:'de rendement en olives projeté',
+    res3:'de latence capteur → action', res4:'de précision du modèle ML (test)', res5:'surveillance sans intervention humaine',
+    footer_desc:'Système intelligent d\'irrigation de l\'olivier basé sur l\'IoT et le Machine Learning.',
+    footer_loc:'El Kelaa des Sraghna, Maroc', footer_year:'Année universitaire 2025–2026',
+    footer_school:'École supérieure de technologies — Kelaa des Sraghna',
+    footer_copy:'© 2026 IrriOlive — Projet de fin d\'études',
+    pp_back:'Retour à mes oliveraies',
+    modal_title:'Configurer mon profil', modal_sub:'Personnalisez votre oliveraie en quelques étapes',
+    step1_label:'Localisation', step2_label:'Type de Sol', step3_label:'Variétés & Terrain', step4_label:'Irrigation',
+    f_region:'Région / Localisation', f_gps:'Ma position', f_soil:'Type de sol principal',
+    f_trees:'Variété(s) d\'olivier cultivée(s)', f_count:'Nombre d\'oliviers', f_trees_unit:'oliviers',
+    f_manual:'Saisie libre', f_apply:'✓ OK',
+    f_area:'Superficie du terrain (hectares)', f_area_unit:'hectares',
+    f_density:'arbres/ha · densité estimée', f_irr:'Méthode d\'irrigation principale',
+    s_calc:'Sol calcaire', s_calc_d:'Riche en calcium, bien drainé',
+    s_clay:'Sol argileux', s_clay_d:'Forte rétention d\'eau',
+    s_sand:'Sol sableux', s_sand_d:'Drainage rapide, léger',
+    s_alluvial:'Sol alluvial', s_alluvial_d:'Fertile, apport fluvial',
+    t1_d:'Variété marocaine rustique, double aptitude', t2_d:'Huile légère, maturité précoce',
+    t3_d:'Adaptée à la haute densité', t4_d:'Grosse olive, aptitude de table',
+    i_drip:'Goutte-à-goutte', i_drip_d:'Précision maximale, −50% eau', i_micro:'Micro-aspersion', i_micro_d:'Couverture uniforme',
+    i_spray:'Aspersion', i_spray_d:'Grands vergers', i_grav:'Gravitaire / Séguia', i_grav_d:'Traditionnel',
+    i_sub:'Sous-surface', i_sub_d:'Évaporation nulle', i_basin:'Bassins / Cuvettes', i_basin_d:'Simple, autour de l\'arbre',
+    btn_back:'← Retour', btn_next:'Suivant →', btn_save:'✅ Enregistrer', btn_update:'✅ Mettre à jour',
+    step_of:'Étape', step_of2:'sur', card_view:'👁 Voir détails', card_edit:'✏️ Modifier', card_delete:'🗑',
+    card_trees:'Oliviers', card_soil:'Sol', card_irr:'Irrigation',
+    pp_edit:'✏️ Modifier', pp_delete:'🗑 Supprimer',
+    pp_loc_title:'📍 Localisation', pp_soil_title:'🌱 Sol & Culture', pp_irr_title:'💧 Système d\'Irrigation',
+    pp_region:'Région', pp_gps:'Coordonnées GPS',
+    pp_soil_type:'Type de sol', pp_tree_count:'Nombre d\'oliviers', pp_area:'Superficie',
+    pp_varieties:'🫒 Variétés cultivées', pp_method:'Méthode',
+    pp_weather:'☁️ Météo temps réel', pp_live:'Live', pp_source_label:'Open-Meteo · Données temps réel',
+    pp_refresh:'Actualiser', pp_loading:'Chargement\ndes données météo…',
+    pp_humidity:'Humidité', pp_precip:'Précipitations', pp_wind:'Vent', pp_dir:'Direction',
+    pp_feels:'Ressenti', pp_wind_force:'🌬️ Force du vent',
+    pp_stat_trees:'Oliviers', pp_stat_ha:'Hectares', pp_stat_var:'Variétés', pp_stat_irr:'Irrigation',
+    pp_no_variety:'Aucune variété renseignée', pp_unreg:'Non renseigné(e)',
+    pp_density:'ha · ~', pp_trees_ha:' arbres/ha',
+    pp_profile:'Oliveraie —',
+    nud_signin:'Se connecter',
+    wmo0:'Ciel dégagé', wmo1:'Principalement clair', wmo2:'Partiellement nuageux',
+    wmo3:'Couvert', wmo45:'Brouillard', wmo51:'Bruine légère', wmo61:'Pluie légère', wmo63:'Pluie modérée',
+    wmo80:'Averses légères', wmo95:'Orage',
+  },
+  ar: {
+    nav_context:'السياق', nav_arch:'المعمارية', nav_goals:'الأهداف',
+    nav_profiles:'ملفاتي',
+    ps_title:'مزارع الزيتون', ps_add:'＋ إضافة مزرعة زيتون',
+    hero_title:'نظام ري ذكي لأشجار الزيتون',
+    hero_region_val:'قلعة السراغنة، المغرب',
+    hero_cta:'إنشاء ملف مزرعتي',
+    hero_hint:'قم بتهيئة مزرعتك في 4 خطوات · الطقس في الوقت الفعلي متضمن',
+    stat1:'توفير مائي تقديري', stat2:'مراقبة على مدار الساعة',
+    stat3:'أنواع أجهزة الاستشعار IoT', stat4:'دقة نموذج التعلم الآلي',
+    ctx_tag:'السياق والإشكالية',
+    ctx_title:'شجرة الزيتون في قلب منطقة شبه جافة',
+    ctx_p1:'تعتبر منطقة قلعة السراغنة إحدى أبرز مناطق زراعة الزيتون في المغرب. مع مناخ شبه جاف وموارد مائية محدودة، يُولِّد الري التقليدي هدراً كبيراً ويؤثر على مردود أشجار الزيتون.',
+    ctx_p2:'يقترح هذا المشروع نظاماً ذكياً قادراً على تحليل البيانات البيئية في الوقت الفعلي وتشغيل الري تلقائياً عند الحاجة فقط، بفضل خوارزميات التعلم الآلي.',
+    prob1_title:'إجهاد مائي متزايد', prob1_desc:'الأمطار السنوية غير كافية وغير منتظمة لتلبية احتياجات أشجار الزيتون',
+    prob2_title:'ري تجريبي غير فعّال', prob2_desc:'الممارسات الحالية القائمة على الخبرة تؤدي إلى الإفراط أو القصور في الري',
+    prob3_title:'تأثير على المردود', prob3_desc:'سوء إدارة الماء يقلل من جودة زيت الزيتون وإنتاجية الأشجار',
+    prob4_title:'الحل المقترح: أتمتة ذكية', prob4_desc:'أجهزة استشعار متصلة + خوارزميات التعلم الآلي لري دقيق وتلقائي وموفِّر للماء',
+    arch_tag:'معمارية النظام', arch_title:'من القطعة إلى لوحة التحكم',
+    layer01:'الطبقة 01', layer02:'الطبقة 02', layer03:'الطبقة 03', layer04:'الطبقة 04', layer05:'الطبقة 05',
+    arch1_title:'اكتساب البيانات', arch1_desc:'شبكة من أجهزة استشعار IoT مثبتة في المزرعة. نقل لاسلكي عبر بروتوكول MQTT.',
+    arch2_title:'المعالجة والتخزين', arch2_desc:'بوابة محلية (Raspberry Pi) لتجميع البيانات ومعالجتها وتخزينها في قاعدة بيانات SQLite.',
+    arch3_title:'الذكاء الاصطناعي', arch3_desc:'نماذج تعلم آلي للتنبؤ باحتياجات الري وفق الطقس والمرحلة الفينولوجية وحالة التربة.',
+    arch4_title:'التشغيل التلقائي', arch4_desc:'تشغيل تلقائي لصمامات الري بناءً على قرارات نموذج التعلم الآلي.',
+    arch5_title:'المراقبة والتنبيهات', arch5_desc:'لوحة تحكم ويب فورية، وسجلات ورسوم بيانية وتنبيهات بريدية للمزارع.',
+    goals_tag:'أهداف المشروع', goals_title:'ما يُحقِّقه النظام',
+    g1_title:'توفير المياه', g1_desc:'تقليل حجم المياه المستخدمة من خلال ري دقيق مبني على بيانات التربة والطقس.',
+    g2_title:'تحسين المردود الزيتوني', g2_desc:'توفير المياه في الوقت والكمية المناسبين لتحسين نمو وجودة ثمار الزيتون.',
+    g3_title:'أتمتة الإدارة', g3_desc:'تحرير المزارع من قرارات الري اليدوية بفضل نظام مستقل وذكي بالكامل.',
+    g4_title:'توفير دعم القرار', g4_desc:'تقديم واجهة تتبع واضحة بمؤشرات ورسوم بيانية وتنبيهات مفهومة.',
+    res1:'توفير مائي تقديري', res2:'زيادة متوقعة في إنتاج الزيتون',
+    res3:'زمن استجابة المستشعر', res4:'دقة نموذج التعلم الآلي', res5:'مراقبة بدون تدخل بشري',
+    footer_desc:'نظام ري ذكي لأشجار الزيتون يعتمد على إنترنت الأشياء والتعلم الآلي.',
+    footer_loc:'قلعة السراغنة، المغرب', footer_year:'السنة الجامعية 2025–2026',
+    footer_school:'المدرسة العليا للتكنولوجيا — قلعة السراغنة',
+    footer_copy:'© 2026 IrriOlive — مشروع نهاية الدراسة',
+    pp_back:'العودة إلى مزارعي',
+    modal_title:'تهيئة ملف المزرعة', modal_sub:'خصِّص مزرعة زيتونك في بضع خطوات',
+    step1_label:'الموقع', step2_label:'نوع التربة', step3_label:'الأصناف والمساحة', step4_label:'الري',
+    f_region:'المنطقة / الموقع', f_gps:'موقعي', f_soil:'نوع التربة الرئيسي',
+    f_trees:'صنف (أصناف) الزيتون المزروع', f_count:'عدد أشجار الزيتون', f_trees_unit:'شجرة',
+    f_manual:'إدخال يدوي', f_apply:'✓ تأكيد',
+    f_area:'مساحة الأرض (هكتار)', f_area_unit:'هكتار',
+    f_density:'شجرة/هكتار · كثافة تقديرية', f_irr:'طريقة الري الرئيسية',
+    s_calc:'تربة كلسية', s_calc_d:'غنية بالكالسيوم، صرف جيد',
+    s_clay:'تربة طينية', s_clay_d:'احتباس مائي عالٍ',
+    s_sand:'تربة رملية', s_sand_d:'صرف سريع وخفيفة',
+    s_alluvial:'تربة طميية', s_alluvial_d:'خصيبة، من أصل نهري',
+    t1_d:'صنف مغربي صلب، مزدوج الاستخدام', t2_d:'زيت خفيف، نضج مبكر',
+    t3_d:'مناسب لزراعة الكثافة العالية', t4_d:'زيتون كبير، صالح للمائدة',
+    i_drip:'بالتنقيط', i_drip_d:'دقة قصوى، توفير 50% من الماء', i_micro:'رش دقيق', i_micro_d:'تغطية موحدة',
+    i_spray:'رش', i_spray_d:'بساتين كبيرة', i_grav:'بالجاذبية / ساقية', i_grav_d:'تقليدي',
+    i_sub:'تحت السطحي', i_sub_d:'تبخر صفري', i_basin:'أحواض / حفر', i_basin_d:'بسيط، حول الشجرة',
+    btn_back:'→ رجوع', btn_next:'التالي ←', btn_save:'✅ حفظ', btn_update:'✅ تحديث',
+    step_of:'الخطوة', step_of2:'من', card_view:'👁 عرض التفاصيل', card_edit:'✏️ تعديل', card_delete:'🗑',
+    card_trees:'أشجار', card_soil:'التربة', card_irr:'الري',
+    pp_edit:'✏️ تعديل', pp_delete:'🗑 حذف',
+    pp_loc_title:'📍 الموقع', pp_soil_title:'🌱 التربة والزراعة', pp_irr_title:'💧 نظام الري',
+    pp_region:'المنطقة', pp_gps:'إحداثيات GPS',
+    pp_soil_type:'نوع التربة', pp_tree_count:'عدد الأشجار', pp_area:'المساحة',
+    pp_varieties:'🫒 الأصناف المزروعة', pp_method:'الطريقة',
+    pp_weather:'☁️ الطقس الآني', pp_live:'مباشر', pp_source_label:'Open-Meteo · بيانات فورية',
+    pp_refresh:'تحديث', pp_loading:'جارٍ التحميل…',
+    pp_humidity:'الرطوبة', pp_precip:'التساقطات', pp_wind:'الريح', pp_dir:'الاتجاه',
+    pp_feels:'محسوس', pp_wind_force:'🌬️ قوة الريح',
+    pp_stat_trees:'أشجار', pp_stat_ha:'هكتار', pp_stat_var:'أصناف', pp_stat_irr:'الري',
+    pp_no_variety:'لا توجد أصناف مسجلة', pp_unreg:'غير مسجل',
+    pp_density:'هكتار · ~', pp_trees_ha:' شجرة/هكتار',
+    pp_profile:'مزرعة زيتون —',
+    nud_signin:'تسجيل الدخول',
+    wmo0:'سماء صافية', wmo1:'صحو بشكل رئيسي', wmo2:'غائم جزئياً',
+    wmo3:'ملبّد بالغيوم', wmo45:'ضباب', wmo51:'رذاذ خفيف', wmo61:'مطر خفيف', wmo63:'مطر معتدل',
+    wmo80:'زخات خفيفة', wmo95:'عاصفة رعدية',
+  }
+};
+
+let currentLang = 'fr';
+function t(key) { return I18N[currentLang][key] || I18N.fr[key] || key; }
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) el.textContent = val;
+  });
+  const si = document.getElementById('stepIndicator');
+  if (si) si.textContent = `${t('step_of')} ${currentStep} ${t('step_of2')} ${totalSteps}`;
+  const btnNext = document.getElementById('btnNext');
+  if (btnNext && currentStep === totalSteps) {
+    btnNext.textContent = editingId ? t('btn_update') : t('btn_save');
+  }
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'fr' ? 'ar' : 'fr';
+  const html = document.documentElement;
+  if (currentLang === 'ar') {
+    html.setAttribute('lang', 'ar'); html.setAttribute('dir', 'rtl');
+    document.getElementById('langFlag').textContent = '🇫🇷';
+    document.getElementById('langLabel').textContent = 'Français';
+  } else {
+    html.setAttribute('lang', 'fr'); html.setAttribute('dir', 'ltr');
+    document.getElementById('langFlag').textContent = '🇲🇦';
+    document.getElementById('langLabel').textContent = 'عربي';
+  }
+  applyTranslations();
+  renderGrid();
+}
+
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 60); });
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); observer.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+function animateCounter(el, target) {
+  let t0;
+  const step = ts => {
+    if (!t0) t0 = ts;
+    const p = Math.min((ts - t0) / 1800, 1);
+    el.textContent = Math.floor(target * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(step); else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+const statsObs = new IntersectionObserver(entries => {
+  if (!entries[0].isIntersecting) return;
+  document.querySelectorAll('.stat-num').forEach(el => {
+    const m = el.innerHTML.match(/^(\d+)/);
+    if (m) {
+      const n = parseInt(m[1]), suffix = el.innerHTML.replace(m[0], '');
+      el.innerHTML = `<span id="cnt-${n}">0</span>${suffix}`;
+      animateCounter(document.getElementById(`cnt-${n}`), n);
+    }
+  });
+  statsObs.disconnect();
+}, { threshold: 0.5 });
+statsObs.observe(document.querySelector('.hero-stats'));
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+
+const WMO_FR = {0:'Ciel dégagé',1:'Principalement clair',2:'Partiellement nuageux',3:'Couvert',45:'Brouillard',51:'Bruine légère',61:'Pluie légère',63:'Pluie modérée',80:'Averses légères',95:'Orage'};
+const WMO_AR = {0:'سماء صافية',1:'صحو بشكل رئيسي',2:'غائم جزئياً',3:'ملبّد بالغيوم',45:'ضباب',51:'رذاذ خفيف',61:'مطر خفيف',63:'مطر معتدل',80:'زخات خفيفة',95:'عاصفة رعدية'};
+const WMO_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',51:'🌦️',61:'🌧️',63:'🌧️',80:'🌦️',95:'⛈️'};
+const getWMO = code => ({ l: (currentLang==='ar' ? WMO_AR : WMO_FR)[code] || '—', i: WMO_ICONS[code] || '🌡️' });
+const DIRS_FR = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
+const DIRS_AR = ['ش','ش ش ش','ش ش','ش ش ش','ش','ج ش ش','ج ش','ج ج ش','ج','ج ج غ','ج غ','غ ج غ','غ','غ ش غ','ش غ','ش ش غ'];
+const windDir = d => (currentLang==='ar' ? DIRS_AR : DIRS_FR)[Math.round(d/22.5)%16];
+const fmtTime = () => new Date().toLocaleTimeString(currentLang==='ar'?'ar-MA':'fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+async function fetchWeather(lat, lon) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,precipitation&wind_speed_unit=kmh&timezone=auto`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('err');
+  return r.json();
+}
+
+async function geocodeCity(name) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(name)}&format=json&limit=1`);
+    const d = await r.json();
+    if (d?.[0]) return { lat: parseFloat(d[0].lat), lon: parseFloat(d[0].lon) };
+  } catch {}
+  return null;
+}
+
+async function detectLocation() {
+  const status = document.getElementById('locationStatus');
+  const input  = document.getElementById('regionInput');
+  if (!navigator.geolocation) { status.className='location-status error'; status.textContent='⚠ Géolocalisation non supportée'; return; }
+  status.className='location-status loading'; status.innerHTML='<span>⌛</span> ' + (currentLang==='ar' ? 'جارٍ تحديد الموقع…' : 'Détection en cours…');
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const { latitude: lat, longitude: lon } = pos.coords;
+    let place = '';
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+      const d = await r.json();
+      const a = d.address;
+      place = [a.village||a.town||a.city||a.county, a.state, a.country].filter(Boolean).join(', ');
+      input.value = place;
+    } catch { input.value = `${lat.toFixed(5)}, ${lon.toFixed(5)}`; }
+    status.className='location-status success';
+    status.innerHTML=`✅ ${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E`;
+    input.dataset.lat = lat;
+    input.dataset.lon = lon;
+  }, err => {
+    status.className='location-status error';
+    status.textContent=`⚠ ${['','Accès refusé','Position indisponible','Délai dépassé'][err.code]||'Erreur'}`;
+  }, { timeout: 8000 });
+}
+
+const MAX_PROFILES = 6;
+let profiles = [], editingId = null, currentStep = 1, olivierCount = 100, superficieVal = 5;
+const totalSteps = 4;
+
+function updateDensityHint() {
+  const density = superficieVal > 0 ? Math.round(olivierCount / superficieVal) : 0;
+  const el = document.getElementById('superficieDensity');
+  if (el) el.textContent = density;
+}
+
+function changeCount(d) {
+  olivierCount = Math.max(1, olivierCount + d);
+  const el = document.getElementById('olivierCount');
+  if (el) { el.style.opacity = '0.5'; setTimeout(() => { el.textContent = olivierCount; el.style.opacity = '1'; }, 80); }
+  const inp = document.getElementById('olivierManualInput');
+  if (inp) inp.value = olivierCount;
+  updateDensityHint();
+}
+function syncCountFromInput() {
+  const inp = document.getElementById('olivierManualInput');
+  if (!inp) return;
+  const v = parseInt(inp.value);
+  if (!isNaN(v) && v >= 1) { olivierCount = v; const el = document.getElementById('olivierCount'); if (el) el.textContent = v; updateDensityHint(); }
+}
+function applyCountManual() {
+  const inp = document.getElementById('olivierManualInput');
+  if (!inp) return;
+  const v = parseInt(inp.value);
+  if (!isNaN(v) && v >= 1) {
+    olivierCount = Math.max(1, Math.min(99999, v));
+    const el = document.getElementById('olivierCount');
+    if (el) { el.style.opacity = '0.5'; setTimeout(() => { el.textContent = olivierCount; el.style.opacity = '1'; }, 80); }
+    inp.value = olivierCount;
+    updateDensityHint();
+    inp.style.borderColor = 'rgba(122,182,72,0.6)';
+    setTimeout(() => { inp.style.borderColor = ''; }, 800);
+  }
+}
+
+function changeSuperficie(d) {
+  superficieVal = Math.max(0.1, Math.round((superficieVal + d) * 10) / 10);
+  const el = document.getElementById('superficieVal');
+  if (el) { el.style.opacity = '0.5'; setTimeout(() => { el.textContent = superficieVal.toFixed(1); el.style.opacity = '1'; }, 80); }
+  const inp = document.getElementById('supManualInput');
+  if (inp) inp.value = superficieVal.toFixed(1);
+  updateDensityHint();
+}
+function syncSupFromInput() {
+  const inp = document.getElementById('supManualInput');
+  if (!inp) return;
+  const v = parseFloat(inp.value);
+  if (!isNaN(v) && v > 0) { superficieVal = Math.round(v * 10) / 10; const el = document.getElementById('superficieVal'); if (el) el.textContent = superficieVal.toFixed(1); updateDensityHint(); }
+}
+function applySupManual() {
+  const inp = document.getElementById('supManualInput');
+  if (!inp) return;
+  const v = parseFloat(inp.value);
+  if (!isNaN(v) && v > 0) {
+    superficieVal = Math.max(0.1, Math.min(9999, Math.round(v * 10) / 10));
+    const el = document.getElementById('superficieVal');
+    if (el) { el.style.opacity = '0.5'; setTimeout(() => { el.textContent = superficieVal.toFixed(1); el.style.opacity = '1'; }, 80); }
+    inp.value = superficieVal.toFixed(1);
+    updateDensityHint();
+    inp.style.borderColor = 'rgba(122,182,72,0.6)';
+    setTimeout(() => { inp.style.borderColor = ''; }, 800);
+  }
+}
+
+const soilL    = { calcaire:{fr:'Sol calcaire',ar:'تربة كلسية'}, argileux:{fr:'Sol argileux',ar:'تربة طينية'}, sableux:{fr:'Sol sableux',ar:'تربة رملية'}, alluvial:{fr:'Sol alluvial',ar:'تربة طميية'} };
+const irrL     = { 'goutte-a-goutte':{fr:'Goutte-à-goutte',ar:'بالتنقيط'}, 'micro-aspersion':{fr:'Micro-aspersion',ar:'رش دقيق'}, aspersion:{fr:'Aspersion',ar:'رش'}, gravitaire:{fr:'Gravitaire',ar:'بالجاذبية'}, subsurface:{fr:'Sous-surface',ar:'تحت السطحي'}, bassins:{fr:'Bassins',ar:'أحواض'} };
+const treeL    = { menara:{fr:'Menara',ar:'منارة'}, itoline:{fr:'Itoline',ar:'إيطولين'}, arbikouina:{fr:'Arbikouina',ar:'أربيكوينا'}, haouziya:{fr:'Haouziya',ar:'الحاوزية'} };
+const treeI    = { menara:'🇲🇦', itoline:'🫒', arbikouina:'🌿', haouziya:'🌅' };
+const lv = (obj, key) => (obj[key] ? (obj[key][currentLang] || obj[key].fr) : '—');
+const PROFILE_ICONS = ['🫒','🌿','🌾','🌳','🍃','🌱'];
+
+function renderCard(p, idx) {
+  const icon = PROFILE_ICONS[idx % PROFILE_ICONS.length];
+  const regionShort = p.region.split(',')[0];
+  const treeTags = p.trees.length > 0
+    ? p.trees.slice(0,4).map(tv => `<span class="pc-vtag">${treeL[tv] ? treeL[tv][currentLang]||treeL[tv].fr : tv}</span>`).join('')
+    + (p.trees.length > 4 ? `<span class="pc-vtag">+${p.trees.length-4}</span>` : '')
+    : `<span style="font-size:0.68rem;color:rgba(245,240,232,0.28)">${t('pp_no_variety')}</span>`;
+  return `
+  <div class="profile-card" id="card-${p.id}" onclick="openProfilePage('${p.id}')">
+    <div class="pc-accent"></div>
+    <div class="pc-header">
+      <div class="pc-avatar">${icon}<div class="pc-avatar-ring"></div></div>
+      <div class="pc-title-block">
+        <div class="pc-name">${regionShort}</div>
+        <div class="pc-location">📍 ${p.region}</div>
+      </div>
+      <div class="pc-index-badge">${idx+1}</div>
+    </div>
+    <div class="pc-info">
+      <div class="pc-row"><span class="pc-row-icon">🌳</span><span class="pc-row-key">${t('card_trees')}</span><span class="pc-row-val green">${p.count} ${currentLang==='ar'?'شجرة':'arbres'}</span></div>
+      <div class="pc-row"><span class="pc-row-icon">🪨</span><span class="pc-row-key">${t('card_soil')}</span><span class="pc-row-val">${lv(soilL, p.soil)}</span></div>
+      <div class="pc-row"><span class="pc-row-icon">💧</span><span class="pc-row-key">${t('card_irr')}</span><span class="pc-row-val">${lv(irrL, p.irrigation)}</span></div>
+    </div>
+    <div class="pc-varieties">${treeTags}</div>
+    <div class="pc-actions" onclick="event.stopPropagation()">
+      <button class="pc-btn pc-btn-view" onclick="openProfilePage('${p.id}')">${t('card_view')}</button>
+      <button class="pc-btn pc-btn-edit" onclick="openModal('${p.id}')">${t('card_edit')}</button>
+      <button class="pc-btn pc-btn-delete" onclick="deleteProfile('${p.id}')">${t('card_delete')}</button>
+    </div>
+  </div>`;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('profilesGrid');
+  grid.innerHTML = profiles.map((p, i) => renderCard(p, i)).join('');
+  document.getElementById('profileCount').textContent = profiles.length;
+  document.getElementById('profileSection').style.display = profiles.length > 0 ? 'block' : 'none';
+  document.getElementById('addProfileBtn').toggleAttribute('disabled', profiles.length >= MAX_PROFILES);
+}
+
+function readForm() {
+  const inp = document.getElementById('regionInput');
+  return {
+    region:     inp.value || t('pp_unreg'),
+    lat:        parseFloat(inp.dataset.lat) || null,
+    lon:        parseFloat(inp.dataset.lon) || null,
+    soil:       document.querySelector('input[name="soil"]:checked')?.value || null,
+    trees:      [...document.querySelectorAll('input[type="checkbox"]:checked')].map(el => el.value),
+    count:      olivierCount,
+    superficie: superficieVal,
+    irrigation: document.querySelector('input[name="irrigation"]:checked')?.value || null,
+  };
+}
+
+function resetForm() {
+  const inp = document.getElementById('regionInput');
+  inp.value = '';
+  delete inp.dataset.lat; delete inp.dataset.lon;
+  document.getElementById('locationStatus').className = 'location-status';
+  document.getElementById('locationStatus').textContent = '';
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  olivierCount = 100; superficieVal = 5;
+  const oc = document.getElementById('olivierCount'); if (oc) oc.textContent = '100';
+  const sv = document.getElementById('superficieVal'); if (sv) sv.textContent = '5.0';
+  const mi = document.getElementById('olivierManualInput'); if (mi) mi.value = '';
+  const si = document.getElementById('supManualInput'); if (si) si.value = '';
+  updateDensityHint();
+}
+
+function prefillForm(p) {
+  resetForm();
+  const inp = document.getElementById('regionInput');
+  if (p.region) inp.value = p.region;
+  if (p.lat) inp.dataset.lat = p.lat;
+  if (p.lon) inp.dataset.lon = p.lon;
+  if (p.soil)    { const el = document.querySelector(`input[name="soil"][value="${p.soil}"]`); if(el) el.checked=true; }
+  p.trees.forEach(v => { const el = document.querySelector(`input[type="checkbox"][value="${v}"]`); if(el) el.checked=true; });
+  olivierCount = p.count;
+  const oc = document.getElementById('olivierCount'); if (oc) oc.textContent = p.count;
+  const mi = document.getElementById('olivierManualInput'); if (mi) mi.value = p.count;
+  if (p.superficie) {
+    superficieVal = p.superficie;
+    const sv = document.getElementById('superficieVal'); if (sv) sv.textContent = parseFloat(p.superficie).toFixed(1);
+    const si = document.getElementById('supManualInput'); if (si) si.value = parseFloat(p.superficie).toFixed(1);
+  }
+  updateDensityHint();
+  if (p.irrigation) { const el = document.querySelector(`input[name="irrigation"][value="${p.irrigation}"]`); if(el) el.checked=true; }
+}
+
+function openModal(editId = null) {
+  editingId = editId;
+  if (editId) {
+    const p = profiles.find(x => x.id === editId);
+    if (p) prefillForm(p);
+    document.querySelector('.modal-title').textContent = t('btn_update').replace('✅ ','');
+  } else {
+    resetForm();
+    document.querySelector('.modal-title').textContent = t('modal_title');
+  }
+  document.querySelector('.modal-subtitle').textContent = t('modal_sub');
+  goToStep(1);
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  editingId = null;
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+function goToStep(n) {
+  for (let i = 1; i <= totalSteps; i++) {
+    document.getElementById(`step-${i}`).classList.remove('active');
+    const ps = document.getElementById(`ps-${i}`);
+    ps.classList.remove('active','done');
+    if (i < n) ps.classList.add('done');
+    if (i === n) ps.classList.add('active');
+    if (i < totalSteps) document.getElementById(`pl-${i}`).classList.toggle('done', i < n);
+  }
+  document.getElementById(`step-${n}`).classList.add('active');
+  currentStep = n;
+  document.getElementById('stepIndicator').textContent = `${t('step_of')} ${n} ${t('step_of2')} ${totalSteps}`;
+  document.getElementById('btnBack').style.visibility = n > 1 ? 'visible' : 'hidden';
+  const btn = document.getElementById('btnNext');
+  if (n === totalSteps) { btn.textContent = editingId ? t('btn_update') : t('btn_save'); btn.classList.add('btn-modal-finish'); }
+  else { btn.textContent = t('btn_next'); btn.classList.remove('btn-modal-finish'); }
+}
+
+function nextStep() { if (currentStep < totalSteps) goToStep(currentStep+1); else saveProfile(); }
+function prevStep() { if (currentStep > 1) goToStep(currentStep-1); }
+
+function saveProfile() {
+  const data = readForm();
+  let savedId;
+  if (editingId) {
+    const idx = profiles.findIndex(x => x.id === editingId);
+    if (idx !== -1) profiles[idx] = { ...profiles[idx], ...data };
+    savedId = editingId;
+  } else {
+    if (profiles.length >= MAX_PROFILES) { closeModal(); return; }
+    const p = { id: Date.now().toString(), ...data };
+    profiles.push(p);
+    savedId = p.id;
+  }
+  renderGrid();
+  closeModal();
+  const saved = profiles.find(p => p.id === savedId);
+  if (!saved.lat && saved.region) {
+    geocodeCity(saved.region).then(coords => { if (coords) { saved.lat = coords.lat; saved.lon = coords.lon; } });
+  }
+  setTimeout(() => { document.getElementById('profileSection').scrollIntoView({ behavior:'smooth', block:'start' }); }, 100);
+  setTimeout(() => openProfilePage(savedId), 700);
+  setTimeout(() => { resetForm(); goToStep(1); }, 500);
+}
+
+function deleteProfile(id) {
+  const card = document.getElementById('card-'+id);
+  if (card) {
+    card.style.transition='opacity 0.3s, transform 0.3s';
+    card.style.opacity='0'; card.style.transform='scale(0.9)';
+    setTimeout(() => { profiles = profiles.filter(p => p.id !== id); renderGrid(); }, 300);
+  }
+}
+
+let detailId = null, detailWeatherInt = null;
+
+function openProfilePage(id) {
+  const p = profiles.find(x => x.id === id);
+  if (!p) return;
+  detailId = id;
+  renderDetailPage(p);
+  const page = document.getElementById('profilePage');
+  page.classList.add('open');
+  page.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProfilePage() {
+  document.getElementById('profilePage').classList.remove('open');
+  document.body.style.overflow = '';
+  if (detailWeatherInt) { clearInterval(detailWeatherInt); detailWeatherInt = null; }
+  detailId = null;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('profilePage').classList.contains('open')) closeProfilePage();
+    else if (document.getElementById('modalOverlay').classList.contains('open')) closeModal();
+  }
+});
+
+function renderDetailPage(p) {
+  const idx = profiles.findIndex(x => x.id === p.id);
+  const icon = PROFILE_ICONS[idx % PROFILE_ICONS.length];
+  const regionShort = p.region.split(',')[0];
+  const hasCoords = p.lat && p.lon;
+  const treePills = p.trees.length > 0
+    ? p.trees.map(tv => `<div class="pp-variety-pill">${treeI[tv]||'🫒'} ${treeL[tv] ? treeL[tv][currentLang]||treeL[tv].fr : tv}</div>`).join('')
+    : `<span style="color:rgba(245,240,232,0.3);font-size:0.8rem">${t('pp_no_variety')}</span>`;
+  const areaVal = p.superficie ? `${parseFloat(p.superficie).toFixed(1)} ${t('pp_density')} ${Math.round(p.count / p.superficie)}${t('pp_trees_ha')}` : t('pp_unreg');
+
+  document.getElementById('ppInner').innerHTML = `
+    <div class="pp-hero">
+      <div class="pp-avatar">${icon}<div class="pp-avatar-ring"></div></div>
+      <div class="pp-hero-info">
+        <div class="pp-hero-name">${t('pp_profile')} ${regionShort}</div>
+        <div class="pp-hero-location">📍 ${p.region}</div>
+        ${hasCoords ? `<div class="pp-hero-coords">🛰️ ${parseFloat(p.lat).toFixed(4)}°N, ${parseFloat(p.lon).toFixed(4)}°E</div>` : ''}
+      </div>
+      <div class="pp-hero-actions">
+        <button class="pp-action-btn pp-btn-edit" onclick="closeProfilePage();setTimeout(()=>openModal('${p.id}'),200)">${t('pp_edit')}</button>
+        <button class="pp-action-btn pp-btn-delete" onclick="closeProfilePage();setTimeout(()=>deleteProfile('${p.id}'),200)">${t('pp_delete')}</button>
+      </div>
+    </div>
+    <div class="pp-stats-bar">
+      <div class="pp-stat-card"><div class="pp-stat-icon">🌳</div><div class="pp-stat-val">${p.count}</div><div class="pp-stat-label">${t('pp_stat_trees')}</div></div>
+      <div class="pp-stat-card"><div class="pp-stat-icon">📐</div><div class="pp-stat-val">${p.superficie ? parseFloat(p.superficie).toFixed(1) : '—'}</div><div class="pp-stat-label">${t('pp_stat_ha')}</div></div>
+      <div class="pp-stat-card"><div class="pp-stat-icon">🫒</div><div class="pp-stat-val">${p.trees.length}</div><div class="pp-stat-label">${t('pp_stat_var')}</div></div>
+      <div class="pp-stat-card"><div class="pp-stat-icon">💧</div><div class="pp-stat-val" style="font-size:0.85rem">${lv(irrL, p.irrigation).split('/')[0].slice(0,10)}</div><div class="pp-stat-label">${t('pp_stat_irr')}</div></div>
+    </div>
+    <div class="pp-main-grid">
+      <div>
+        <div class="pp-block">
+          <div class="pp-block-header">${t('pp_loc_title')}</div>
+          <div class="pp-block-body"><div class="pp-rows">
+            <div class="pp-row"><div class="pp-row-icon green">📍</div><span class="pp-row-key">${t('pp_region')}</span><span class="pp-row-val">${p.region}</span></div>
+            ${hasCoords ? `<div class="pp-row"><div class="pp-row-icon blue">🛰️</div><span class="pp-row-key">${t('pp_gps')}</span><span class="pp-row-val">${parseFloat(p.lat).toFixed(5)}°N, ${parseFloat(p.lon).toFixed(5)}°E</span></div>` : ''}
+          </div></div>
+        </div>
+        <div class="pp-block">
+          <div class="pp-block-header">${t('pp_soil_title')}</div>
+          <div class="pp-block-body"><div class="pp-rows">
+            <div class="pp-row"><div class="pp-row-icon gold">🪨</div><span class="pp-row-key">${t('pp_soil_type')}</span><span class="pp-row-val">${lv(soilL, p.soil)}</span></div>
+            <div class="pp-row"><div class="pp-row-icon green">🌳</div><span class="pp-row-key">${t('pp_tree_count')}</span><span class="pp-row-val accent">${p.count} ${currentLang==='ar'?'شجرة':'arbres'}</span></div>
+            <div class="pp-row"><div class="pp-row-icon gold">📐</div><span class="pp-row-key">${t('pp_area')}</span><span class="pp-row-val">${areaVal}</span></div>
+          </div>
+          <div style="margin-top:1rem;">
+            <div style="font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-light);margin-bottom:0.6rem;">${t('pp_varieties')}</div>
+            <div class="pp-variety-grid">${treePills}</div>
+          </div></div>
+        </div>
+        <div class="pp-block">
+          <div class="pp-block-header">${t('pp_irr_title')}</div>
+          <div class="pp-block-body"><div class="pp-rows">
+            <div class="pp-row"><div class="pp-row-icon blue">💧</div><span class="pp-row-key">${t('pp_method')}</span><span class="pp-row-val">${lv(irrL, p.irrigation)}</span></div>
+          </div></div>
+        </div>
+      </div>
+      <div class="pp-weather-block">
+        <div class="pp-weather-header">
+          <div class="pp-weather-title">${t('pp_weather')}</div>
+          <div class="pp-weather-live"><div class="pp-weather-live-dot"></div> ${t('pp_live')}</div>
+        </div>
+        <div class="pp-weather-body" id="ppWeatherBody">
+          <div class="ppw-loading"><div class="ppw-spinner"></div><div class="ppw-loading-txt">${t('pp_loading')}</div></div>
+        </div>
+        <div class="ppw-footer">
+          <span class="ppw-source">${t('pp_source_label')}</span>
+          <button class="ppw-refresh-btn" id="ppwBtn" onclick="loadDetailWeather()"><span class="ppw-spin">↻</span> ${t('pp_refresh')}</button>
+        </div>
+      </div>
+    </div>`;
+
+  if (hasCoords) {
+    loadDetailWeather();
+    if (detailWeatherInt) clearInterval(detailWeatherInt);
+    detailWeatherInt = setInterval(loadDetailWeather, 600000);
+  } else if (p.region) {
+    geocodeCity(p.region).then(coords => {
+      if (coords && detailId === p.id) { p.lat = coords.lat; p.lon = coords.lon; loadDetailWeather(); }
+      else if (detailId === p.id) showDetailWeatherError();
+    });
+  } else showDetailWeatherError();
+}
+
+async function loadDetailWeather() {
+  const p = profiles.find(x => x.id === detailId);
+  if (!p?.lat || !p?.lon) return;
+  const body = document.getElementById('ppWeatherBody');
+  if (!body) return;
+  const btn = document.getElementById('ppwBtn');
+  if (btn) btn.classList.add('spinning');
+  try {
+    const data = await fetchWeather(p.lat, p.lon);
+    const c = data.current;
+    const wmo = getWMO(c.weather_code);
+    const wd = windDir(c.wind_direction_10m);
+    const windPct = Math.min(100, (c.wind_speed_10m/80)*100);
+    body.innerHTML = `
+      <div class="ppw-main-block">
+        <div class="ppw-temp-block">
+          <div class="ppw-temp-val">${Math.round(c.temperature_2m)}<span class="ppw-temp-unit">°C</span></div>
+          <div class="ppw-weather-label">${wmo.l}</div>
+          <div class="ppw-feels">${t('pp_feels')} ${Math.round(c.apparent_temperature)}°C</div>
+        </div>
+        <div class="ppw-big-icon">${wmo.i}</div>
+      </div>
+      <div class="ppw-stats">
+        <div class="ppw-stat"><div class="ppw-stat-icon">💧</div><div class="ppw-stat-val">${c.relative_humidity_2m}%</div><div class="ppw-stat-label">${t('pp_humidity')}</div></div>
+        <div class="ppw-stat"><div class="ppw-stat-icon">🌧️</div><div class="ppw-stat-val">${c.precipitation.toFixed(1)} mm</div><div class="ppw-stat-label">${t('pp_precip')}</div></div>
+        <div class="ppw-stat"><div class="ppw-stat-icon">🌬️</div><div class="ppw-stat-val">${Math.round(c.wind_speed_10m)} km/h</div><div class="ppw-stat-label">${t('pp_wind')}</div></div>
+        <div class="ppw-stat"><div class="ppw-stat-icon">🧭</div><div class="ppw-stat-val">${wd}</div><div class="ppw-stat-label">${t('pp_dir')}</div></div>
+      </div>
+      <div class="ppw-wind">
+        <div class="ppw-wind-label"><span>${t('pp_wind_force')}</span><span>${Math.round(c.wind_speed_10m)} km/h</span></div>
+        <div class="ppw-bar-track"><div class="ppw-bar-fill" id="ppwWind" style="width:0%"></div></div>
+      </div>
+      <div style="font-size:0.59rem;color:rgba(245,240,232,0.2);text-align:center;margin-top:0.3rem;">MAJ ${fmtTime()}</div>`;
+    setTimeout(() => { const f = document.getElementById('ppwWind'); if(f) f.style.width = windPct+'%'; }, 60);
+  } catch { showDetailWeatherError(); }
+  const btn2 = document.getElementById('ppwBtn');
+  if (btn2) btn2.classList.remove('spinning');
+}
+
+function showDetailWeatherError(msg) {
+  msg = msg || (currentLang==='ar' ? 'تعذّر تحميل بيانات الطقس.' : 'Impossible de charger la météo.');
+  const body = document.getElementById('ppWeatherBody');
+  if (body) body.innerHTML = `
+    <div class="ppw-error">
+      <div class="ppw-error-icon">🌐</div>
+      <div class="ppw-error-msg">${msg}</div>
+      <button class="ppw-retry-btn" onclick="loadDetailWeather()">↻ ${t('pp_refresh')}</button>
+    </div>`;
+}
+
+goToStep(1);
+applyTranslations();
+
+// Close user dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const btn = document.getElementById('navUserBtn');
+  if (btn && !btn.contains(e.target)) btn.classList.remove('open');
+});
+</script>
+</body>
+</html>

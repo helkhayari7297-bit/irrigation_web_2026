@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Inscription — Irrigation Intelligente</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --green-900: #0d2b1a; --green-700: #1a4a2e; --green-500: #2e8b57;
+    --green-400: #3da668; --green-300: #4aba78; --green-100: #b8dfc8;
+    --cream: #f7f3ec; --sand: #e2d9c8; --white: #ffffff;
+    --text: #0f2d1c; --muted: #4a7a5e; --light: #8aab96;
+    --error: #c0392b; --success: #1a7a42;
+    --shadow: 0 32px 80px rgba(0,0,0,0.45), 0 8px 24px rgba(0,0,0,0.2);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'DM Sans', sans-serif; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--green-900); position: relative; padding: 2rem 1rem;
+}
+.bg-photo {
+    position: fixed; inset: 0;
+    background: url("{{ url_for('static', filename='hhh.jpg.png') }}") no-repeat center center / cover;
+    z-index: 0; animation: slowZoom 20s ease-in-out infinite alternate;
+}
+@keyframes slowZoom { from { transform: scale(1.05); } to { transform: scale(1.12); } }
+.bg-overlay {
+    position: fixed; inset: 0; z-index: 1;
+    background: linear-gradient(160deg, rgba(13,43,26,0.85) 0%, rgba(26,74,46,0.68) 50%, rgba(13,43,26,0.9) 100%);
+}
+.bg-grain {
+    position: fixed; inset: 0; z-index: 2; opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+}
+
+.page {
+    position: relative; z-index: 10; display: flex;
+    width: 100%; max-width: 920px; border-radius: 28px;
+    overflow: hidden; box-shadow: var(--shadow);
+    animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.panel-left {
+    width: 270px; flex-shrink: 0; padding: 3rem 2.2rem;
+    background: linear-gradient(160deg, var(--green-700) 0%, var(--green-900) 100%);
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+}
+.panel-left::before {
+    content: ''; position: absolute; width: 260px; height: 260px;
+    border-radius: 50%; border: 1px solid rgba(74,186,120,0.1); top: -70px; right: -80px;
+}
+.panel-left::after {
+    content: ''; position: absolute; width: 160px; height: 160px;
+    border-radius: 50%; border: 1px solid rgba(74,186,120,0.07); bottom: 50px; left: -55px;
+}
+
+.brand { position: relative; z-index: 2; margin-bottom: 2rem; }
+.brand-icon { font-size: 2.6rem; display: block; margin-bottom: 1rem; animation: sway 4s ease-in-out infinite; }
+@keyframes sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+.brand h1 {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.8rem;
+    font-weight: 700; color: var(--cream); line-height: 1.15; margin-bottom: 0.4rem;
+}
+.brand p { font-size: 0.72rem; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-100); opacity: 0.65; }
+
+.steps { position: relative; z-index: 2; display: flex; flex-direction: column; flex: 1; }
+.step { display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.85rem 0; position: relative; cursor: pointer; }
+.step:not(:last-child)::after {
+    content: ''; position: absolute; left: 10px; top: 36px;
+    width: 1px; height: calc(100% - 10px); background: rgba(74,186,120,0.15);
+    transition: background 0.4s;
+}
+.step.done:not(:last-child)::after { background: rgba(74,186,120,0.35); }
+.step-num {
+    width: 22px; height: 22px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 0.65rem;
+    font-weight: 600; flex-shrink: 0; margin-top: 1px;
+    position: relative; z-index: 1; transition: all 0.35s;
+}
+.step-num.pending { background: transparent; border: 1.5px solid rgba(74,186,120,0.2); color: rgba(255,255,255,0.25); }
+.step-num.done    { background: rgba(74,186,120,0.2); border: 1.5px solid rgba(74,186,120,0.4); color: var(--green-300); }
+.step-num.active  { background: var(--green-300); border: 1.5px solid var(--green-300); color: var(--green-900); box-shadow: 0 0 0 4px rgba(74,186,120,0.15); }
+.step-text strong { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 0.1rem; transition: color 0.3s; }
+.step.pending .step-text strong { color: rgba(255,255,255,0.3); }
+.step.done    .step-text strong { color: rgba(255,255,255,0.5); }
+.step.active  .step-text strong { color: var(--cream); }
+.step-text span { font-size: 0.68rem; font-weight: 300; color: rgba(255,255,255,0.25); }
+.step.active .step-text span { color: rgba(255,255,255,0.45); }
+
+.lock-deco {
+    position: relative; z-index: 2;
+    display: none; flex-direction: column; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem;
+}
+.lock-deco.visible { display: flex; }
+.lock-ring {
+    width: 60px; height: 60px; border-radius: 50%;
+    border: 1.5px solid rgba(74,186,120,0.2);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; animation: pulseLock 3s ease-in-out infinite;
+}
+.lock-ring::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 1px solid rgba(74,186,120,0.08); }
+@keyframes pulseLock { 0%, 100% { box-shadow: 0 0 0 0 rgba(74,186,120,0); } 50% { box-shadow: 0 0 0 8px rgba(74,186,120,0.06); } }
+.lock-icon { font-size: 1.6rem; }
+.lock-caption { font-size: 0.7rem; font-weight: 300; color: rgba(255,255,255,0.35); text-align: center; line-height: 1.5; }
+
+.back-link {
+    position: relative; z-index: 2; display: flex; align-items: center;
+    gap: 0.4rem; font-size: 0.72rem; color: rgba(255,255,255,0.35);
+    text-decoration: none; transition: color 0.2s;
+}
+.back-link:hover { color: var(--green-300); }
+.back-link svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.panel-right {
+    flex: 1; background: var(--cream); padding: 2.8rem 3rem 2.5rem;
+    display: flex; flex-direction: column; overflow-y: auto;
+    animation: slideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+.progress-bar { display: flex; gap: 4px; margin-bottom: 2rem; }
+.progress-seg { height: 3px; border-radius: 2px; flex: 1; background: var(--sand); transition: background 0.5s ease; }
+.progress-seg.done   { background: rgba(46,139,87,0.4); }
+.progress-seg.active { background: var(--green-400); }
+
+.form-heading { margin-bottom: 1.8rem; padding-bottom: 1.4rem; border-bottom: 1px solid var(--sand); }
+.step-badge { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; }
+.step-badge .dot {
+    width: 20px; height: 20px; border-radius: 50%; background: var(--green-300);
+    color: var(--green-900); font-size: 0.62rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
+.step-badge span { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-500); }
+.form-heading h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+.form-heading p { font-size: 0.78rem; font-weight: 300; color: var(--muted); }
+
+.step-panel { display: none; }
+.step-panel.active { display: block; animation: fadeUp 0.45s ease both; }
+@keyframes fadeUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.4rem; margin-bottom: 1rem; }
+.full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field label { font-size: 0.69rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.field label .req { color: var(--green-400); margin-left: 2px; }
+
+.input-wrap { position: relative; transition: transform 0.2s ease; }
+.input-wrap:focus-within { transform: scale(1.01); }
+.input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; display: flex; }
+.input-icon svg { width: 14px; height: 14px; stroke: var(--green-400); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+.input-wrap:focus-within .input-icon svg { stroke: var(--green-500); }
+
+input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="password"] {
+    width: 100%; padding: 0.78rem 2.5rem; background: var(--white);
+    border: 1.5px solid var(--sand); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.86rem; color: var(--text);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px rgba(46,139,87,0.1); }
+input::placeholder { color: #b5c8bc; font-weight: 300; }
+input.valid   { border-color: var(--green-400); }
+input.invalid { border-color: #e74c3c; }
+
+input[type="date"] { cursor: pointer; }
+input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.4; cursor: pointer; filter: invert(35%) sepia(40%) saturate(600%) hue-rotate(100deg); }
+
+.btn-eye {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; padding: 2px; line-height: 0;
+    color: #b5c8bc; transition: color 0.2s;
+}
+.btn-eye:hover { color: var(--green-500); }
+.btn-eye svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.field-hint { font-size: 0.67rem; font-weight: 300; color: var(--light); margin-top: 2px; display: flex; align-items: center; gap: 0.3rem; }
+.field-hint svg { width: 11px; height: 11px; stroke: var(--light); fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
+.field-msg { font-size: 0.7rem; font-weight: 400; min-height: 14px; margin-top: 3px; display: none; }
+.field-msg.error   { color: var(--error);   display: block; }
+.field-msg.success { color: var(--success); display: block; }
+
+.tel-group {
+    display: flex; border: 1.5px solid var(--sand); border-radius: 10px;
+    overflow: hidden; background: var(--white); transition: border-color 0.2s, box-shadow 0.2s;
+}
+.tel-group:focus-within { border-color: var(--green-500); box-shadow: 0 0 0 3px rgba(46,139,87,0.1); }
+.country-select {
+    display: flex; align-items: center; padding: 0 0.85rem;
+    background: var(--sand); border-right: 1.5px solid #d4cab8;
+    gap: 0.45rem; cursor: pointer; position: relative;
+    min-width: 100px; user-select: none; transition: background 0.2s;
+}
+.country-select:hover { background: #d4cab8; }
+.country-flag { font-size: 1rem; }
+.country-code { font-size: 0.82rem; font-weight: 500; color: var(--muted); }
+.country-chevron { margin-left: auto; width: 11px; height: 11px; stroke: var(--light); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.country-dropdown {
+    position: absolute; top: calc(100% + 6px); left: -1.5px; width: 230px;
+    background: white; border: 1.5px solid var(--sand); border-radius: 12px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.12); z-index: 200; overflow: hidden; display: none;
+    animation: dropIn 0.2s ease;
+}
+.country-dropdown.open { display: block; }
+@keyframes dropIn { from { transform: translateY(-6px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.country-option {
+    display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 1rem;
+    cursor: pointer; font-size: 0.82rem; color: var(--text); transition: background 0.15s;
+}
+.country-option:hover { background: rgba(46,139,87,0.06); }
+.country-option.selected { background: rgba(46,139,87,0.08); color: var(--green-500); font-weight: 500; }
+.country-option .c-flag { font-size: 1rem; }
+.country-option .c-name { flex: 1; }
+.country-option .c-code { font-size: 0.74rem; color: var(--light); }
+.tel-input {
+    flex: 1; padding: 0.78rem 1rem; border: none; outline: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.86rem; color: var(--text); background: transparent;
+}
+.tel-input::placeholder { color: #b5c8bc; font-weight: 300; }
+
+.strength-section { margin-top: 0.6rem; }
+.strength-bars { display: flex; gap: 5px; margin-bottom: 5px; }
+.s-bar { flex: 1; height: 4px; border-radius: 2px; background: var(--sand); transition: background 0.35s ease, transform 0.2s ease; }
+.s-bar.weak    { background: #e74c3c; transform: scaleY(1.5); }
+.s-bar.medium  { background: #f39c12; transform: scaleY(1.5); }
+.s-bar.strong  { background: var(--green-400); transform: scaleY(1.5); }
+.s-bar.perfect { background: var(--green-500); transform: scaleY(1.5); }
+.strength-label { font-size: 0.72rem; font-weight: 500; min-height: 14px; margin-bottom: 0.7rem; transition: color 0.3s; display: block; }
+.criteria { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1rem; }
+.crit { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 300; color: var(--light); transition: color 0.3s; }
+.crit.met { color: var(--success); }
+.crit-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; border: 1.5px solid var(--sand); display: flex; align-items: center; justify-content: center; font-size: 0.55rem; transition: all 0.3s; }
+.crit.met .crit-dot { background: var(--green-400); border-color: var(--green-400); color: white; }
+.match-indicator { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 400; min-height: 16px; margin-top: 0.35rem; transition: color 0.3s; }
+.match-indicator svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+.cgu-wrap { display: flex; align-items: flex-start; gap: 0.6rem; margin: 1.2rem 0 0; }
+.cgu-wrap input[type="checkbox"] { accent-color: var(--green-500); width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+.cgu-wrap label { font-size: 0.78rem; font-weight: 300; color: var(--muted); cursor: pointer; line-height: 1.55; }
+.cgu-wrap label a { color: var(--green-500); text-decoration: none; font-weight: 500; }
+.cgu-wrap label a:hover { text-decoration: underline; }
+
+.form-actions { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+.btn-back {
+    padding: 0.88rem 1.4rem; border: 1.5px solid var(--sand); border-radius: 12px;
+    background: transparent; color: var(--muted);
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 400;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; white-space: nowrap;
+}
+.btn-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.btn-back:hover { border-color: var(--green-400); color: var(--green-500); background: rgba(46,139,87,0.04); }
+.btn-next, .btn-submit-final {
+    flex: 1; padding: 0.9rem; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, var(--green-500), var(--green-300)); color: white;
+    font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 500; letter-spacing: 0.05em;
+    cursor: pointer; transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 4px 18px rgba(46,139,87,0.35); position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+}
+.btn-next::after, .btn-submit-final::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent 60%); opacity: 0; transition: opacity 0.25s; }
+.btn-next:hover, .btn-submit-final:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(46,139,87,0.45); }
+.btn-next:hover::after, .btn-submit-final:hover::after { opacity: 1; }
+.btn-next:active, .btn-submit-final:active { transform: translateY(0); }
+.btn-next svg, .btn-submit-final svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; position: relative; z-index: 1; }
+.btn-next span, .btn-submit-final span { position: relative; z-index: 1; }
+
+.login-link { margin-top: 1.2rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+.login-link a { color: var(--green-500); text-decoration: none; font-weight: 500; margin-left: 0.2rem; transition: color 0.2s; }
+.login-link a:hover { color: var(--green-700); text-decoration: underline; }
+
+.flash { padding: 0.65rem 0.9rem; border-radius: 9px; font-size: 0.8rem; text-align: center; animation: shake 0.4s ease; margin-bottom: 1rem; }
+.flash.error   { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); color: var(--error); }
+.flash.success { background: rgba(26,122,66,0.08);  border: 1px solid rgba(26,122,66,0.2); color: var(--success); }
+.flash.warning { background: rgba(230,126,34,0.08); border: 1px solid rgba(230,126,34,0.2); color: #a04000; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+@media (max-width: 860px) {
+    .page { max-width: 700px; }
+    .panel-left { width: 240px; padding: 2.5rem 1.8rem; }
+    .panel-right { padding: 2.5rem 2rem; }
+}
+@media (max-width: 680px) {
+    body { align-items: flex-start; padding: 1rem; }
+    .page { flex-direction: column; max-width: 500px; border-radius: 20px; }
+    .panel-left { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; padding: 1.4rem 1.8rem; }
+    .panel-left::after { display: none; }
+    .brand { display: flex; align-items: center; gap: 0.8rem; }
+    .brand-icon { font-size: 1.8rem; margin-bottom: 0; animation: none; }
+    .brand h1 { font-size: 1.2rem; margin-bottom: 0; }
+    .brand p { display: none; }
+    .steps { flex-direction: row; gap: 0.5rem; }
+    .step::after { display: none; }
+    .step-text { display: none; }
+    .lock-deco, .back-link { display: none !important; }
+    .panel-right { padding: 2rem 1.5rem 1.5rem; }
+    .form-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+    .full { grid-column: 1; }
+    .criteria { grid-template-columns: 1fr; }
+}
+@media (max-width: 460px) {
+    body { padding: 0; }
+    .page { max-width: 100%; border-radius: 0; min-height: 100vh; }
+    .panel-left { padding: 1.2rem 1.4rem; }
+    .panel-right { padding: 1.8rem 1.2rem 1.4rem; }
+    .form-heading h2 { font-size: 1.4rem; }
+    .form-actions { flex-direction: column-reverse; }
+    .btn-back { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-photo"></div>
+<div class="bg-overlay"></div>
+<div class="bg-grain"></div>
+
+<div class="page">
+
+    <div class="panel-left">
+        <div class="brand">
+            <span class="brand-icon">🌿</span>
+            <h1>Irrigation<br>Intelligente</h1>
+            <p>Système de gestion agricole</p>
+        </div>
+
+        <div class="steps">
+            <div class="step active" id="nav-step-1" onclick="goToStep(1)">
+                <div class="step-num active" id="sn-1">1</div>
+                <div class="step-text">
+                    <strong>Informations personnelles</strong>
+                    <span>Nom, prénom, date de naissance</span>
+                </div>
+            </div>
+            <div class="step pending" id="nav-step-2" onclick="goToStep(2)">
+                <div class="step-num pending" id="sn-2">2</div>
+                <div class="step-text">
+                    <strong>Coordonnées</strong>
+                    <span>Email et téléphone</span>
+                </div>
+            </div>
+            <div class="step pending" id="nav-step-3" onclick="goToStep(3)">
+                <div class="step-num pending" id="sn-3">3</div>
+                <div class="step-text">
+                    <strong>Sécurité</strong>
+                    <span>Mot de passe</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="lock-deco" id="lock-deco">
+            <div class="lock-ring"><span class="lock-icon">🔐</span></div>
+            <p class="lock-caption">Dernière étape<br>Sécurisez votre compte</p>
+        </div>
+
+        <a href="{{ url_for('login') }}" class="back-link">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Retour à la connexion
+        </a>
+    </div>
+
+    <div class="panel-right">
+
+        <div class="progress-bar">
+            <div class="progress-seg active" id="pg-1"></div>
+            <div class="progress-seg"        id="pg-2"></div>
+            <div class="progress-seg"        id="pg-3"></div>
+        </div>
+
+        <div class="form-heading" id="form-heading">
+            <div class="step-badge">
+                <div class="dot" id="badge-num">1</div>
+                <span id="badge-label">Étape 1 sur 3</span>
+            </div>
+            <h2 id="heading-title">Informations personnelles</h2>
+            <p  id="heading-sub">Renseignez vos informations d'identité</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">
+                {% if category == 'error' %}⚠ {% elif category == 'success' %}✓ {% else %}ℹ {% endif %}{{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('signup') }}" novalidate id="main-form">
+            {{ csrf_token() if csrf_token is defined }}
+
+            <div class="step-panel active" id="panel-1">
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="prenom">Prénom <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+                            <input type="text" id="prenom" name="prenom" placeholder="ex : Youssef" autocomplete="given-name" value="{{ request.form.get('prenom', '') }}" required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="nom">Nom <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+                            <input type="text" id="nom" name="nom" placeholder="ex : El Amrani" autocomplete="family-name" value="{{ request.form.get('nom', '') }}" required>
+                        </div>
+                    </div>
+
+                    <div class="field full">
+                        <label for="dob">Date de naissance <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+                            <input type="date" id="dob" name="dob" value="{{ request.form.get('dob', '') }}" required>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-next" onclick="nextStep(1)">
+                        <span>Continuer</span>
+                        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="step-panel" id="panel-2">
+                <div style="display:flex; flex-direction:column; gap:1.3rem; margin-bottom:0.5rem;">
+
+                    <div class="field">
+                        <label for="telephone">Numéro de téléphone <span class="req">*</span></label>
+                        <div class="tel-group" id="tel-group">
+                            <div class="country-select" id="country-select" onclick="toggleDropdown(event)">
+                                <span class="country-flag" id="sel-flag">🇲🇦</span>
+                                <span class="country-code" id="sel-code">+212</span>
+                                <svg class="country-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
+                            <div class="country-dropdown" id="country-dropdown">
+                                <div class="country-option selected" data-flag="🇲🇦" data-code="+212" data-value="ma" onclick="selectCountry('🇲🇦', '+212', 'ma')">
+                                    <span class="c-flag">🇲🇦</span><span class="c-name">Maroc</span><span class="c-code">+212</span>
+                                </div>
+                                <div class="country-option" data-flag="🇫🇷" data-code="+33" data-value="fr" onclick="selectCountry('🇫🇷', '+33', 'fr')">
+                                    <span class="c-flag">🇫🇷</span><span class="c-name">France</span><span class="c-code">+33</span>
+                                </div>
+                                <div class="country-option" data-flag="🇪🇸" data-code="+34" data-value="es" onclick="selectCountry('🇪🇸', '+34', 'es')">
+                                    <span class="c-flag">🇪🇸</span><span class="c-name">Espagne</span><span class="c-code">+34</span>
+                                </div>
+                            </div>
+                            <input type="tel" class="tel-input" id="telephone" name="telephone" placeholder="612345678" value="{{ request.form.get('telephone', '') }}" required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Adresse e-mail <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+                            <input type="email" id="email" name="email" placeholder="ex: contact@example.com" autocomplete="email" value="{{ request.form.get('email', '') }}" required>
+                        </div>
+                        <div class="field-msg" id="email-msg"></div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-back" onclick="prevStep(2)">
+                        <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                        <span>Retour</span>
+                    </button>
+                    <button type="button" class="btn-next" onclick="nextStep(2)">
+                        <span>Continuer</span>
+                        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="step-panel" id="panel-3">
+                <div style="margin-bottom:1rem;">
+                    <div class="field">
+                        <label for="password">Mot de passe <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                            <input type="password" id="password" name="password" placeholder="Créez un mot de passe" autocomplete="new-password" required oninput="checkPasswordStrength()">
+                            <button type="button" class="btn-eye" onclick="togglePassword('password', this)">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>
+                            </button>
+                        </div>
+                        
+                        <div class="strength-section">
+                            <div class="strength-bars">
+                                <div class="s-bar" id="sbar1"></div>
+                                <div class="s-bar" id="sbar2"></div>
+                                <div class="s-bar" id="sbar3"></div>
+                                <div class="s-bar" id="sbar4"></div>
+                            </div>
+                            <span class="strength-label" id="strength-label">Faible</span>
+                            
+                            <div class="criteria">
+                                <div class="crit" id="crit-length"><span class="crit-dot">✓</span> 8 caractères min</div>
+                                <div class="crit" id="crit-number"><span class="crit-dot">✓</span> Au moins 1 chiffre</div>
+                                <div class="crit" id="crit-upper"><span class="crit-dot">✓</span> Au moins 1 majuscule</div>
+                                <div class="crit" id="crit-special"><span class="crit-dot">✓</span> Au moins 1 caractère spécial</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="confirm_password">Confirmer le mot de passe <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmez votre mot de passe" autocomplete="new-password" required oninput="checkPasswordMatch()">
+                            <button type="button" class="btn-eye" onclick="togglePassword('confirm_password', this)">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>
+                            </button>
+                        </div>
+                        <div class="match-indicator" id="password-match-msg"></div>
+                    </div>
+
+                    <div class="cgu-wrap">
+                        <input type="checkbox" id="cgu" name="cgu" required>
+                        <label for="cgu">J'accepte les <a href="#" target="_blank">conditions générales d'utilisation</a> et la <a href="#" target="_blank">politique de confidentialité</a></label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-back" onclick="prevStep(3)">
+                        <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                        <span>Retour</span>
+                    </button>
+                    <button type="submit" class="btn-submit-final" id="submit-btn">
+                        <span>Créer mon compte</span>
+                        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                    </button>
+                </div>
+            </div>
+        </form>
+        
+        <div class="login-link">
+            Déjà un compte ?<a href="{{ url_for('login') }}">Se connecter</a>
+        </div>
+    </div>
+</div>
+
+<script>
+// État global de l'application
+let currentStep = 1;
+let formData = {};
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser les écouteurs d'événements
+    initFormListeners();
+    
+    // S'assurer que l'étape 1 est active
+    updateUI(1);
+    
+    // Fermer les dropdowns si on clique ailleurs
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('country-dropdown');
+        const select = document.getElementById('country-select');
+        if (dropdown && select && !select.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+});
+
+// Initialiser les écouteurs d'événements pour les champs de formulaire
+function initFormListeners() {
+    // Sauvegarder les données quand l'utilisateur tape
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+            saveCurrentStepData();
+        });
+    });
+}
+
+// Sauvegarder les données de l'étape courante
+function saveCurrentStepData() {
+    if (currentStep === 1) {
+        formData.prenom = document.getElementById('prenom')?.value || '';
+        formData.nom = document.getElementById('nom')?.value || '';
+        formData.dob = document.getElementById('dob')?.value || '';
+    } else if (currentStep === 2) {
+        formData.telephone = document.getElementById('telephone')?.value || '';
+        formData.email = document.getElementById('email')?.value || '';
+        formData.countryCode = document.getElementById('sel-code')?.textContent || '+212';
+    } else if (currentStep === 3) {
+        formData.password = document.getElementById('password')?.value || '';
+        formData.confirm_password = document.getElementById('confirm_password')?.value || '';
+        formData.cgu = document.getElementById('cgu')?.checked || false;
+    }
+}
+
+// Charger les données sauvegardées dans l'étape courante
+function loadStepData(step) {
+    if (step === 1) {
+        if (formData.prenom) document.getElementById('prenom').value = formData.prenom;
+        if (formData.nom) document.getElementById('nom').value = formData.nom;
+        if (formData.dob) document.getElementById('dob').value = formData.dob;
+    } else if (step === 2) {
+        if (formData.telephone) document.getElementById('telephone').value = formData.telephone;
+        if (formData.email) document.getElementById('email').value = formData.email;
+        if (formData.countryCode) {
+            document.getElementById('sel-code').textContent = formData.countryCode;
+            // Mettre à jour le drapeau en fonction du code
+            if (formData.countryCode === '+212') document.getElementById('sel-flag').textContent = '🇲🇦';
+            else if (formData.countryCode === '+33') document.getElementById('sel-flag').textContent = '🇫🇷';
+            else if (formData.countryCode === '+34') document.getElementById('sel-flag').textContent = '🇪🇸';
+        }
+    } else if (step === 3) {
+        if (formData.password) document.getElementById('password').value = formData.password;
+        if (formData.confirm_password) document.getElementById('confirm_password').value = formData.confirm_password;
+        if (formData.cgu) document.getElementById('cgu').checked = formData.cgu;
+        
+        // Mettre à jour les indicateurs de mot de passe
+        checkPasswordStrength();
+        checkPasswordMatch();
+    }
+}
+
+// Valider l'étape courante avant de passer à la suivante
+function validateStep(step) {
+    if (step === 1) {
+        const prenom = document.getElementById('prenom').value.trim();
+        const nom = document.getElementById('nom').value.trim();
+        const dob = document.getElementById('dob').value;
+        
+        if (!prenom) {
+            alert('Veuillez saisir votre prénom');
+            document.getElementById('prenom').focus();
+            return false;
+        }
+        if (!nom) {
+            alert('Veuillez saisir votre nom');
+            document.getElementById('nom').focus();
+            return false;
+        }
+        if (!dob) {
+            alert('Veuillez saisir votre date de naissance');
+            document.getElementById('dob').focus();
+            return false;
+        }
+        
+        // Vérifier que l'utilisateur a au moins 18 ans
+        const birthDate = new Date(dob);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        if (age < 18) {
+            alert('Vous devez avoir au moins 18 ans pour créer un compte');
+            return false;
+        }
+        
+        return true;
+    } else if (step === 2) {
+        const telephone = document.getElementById('telephone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        
+        if (!telephone) {
+            alert('Veuillez saisir votre numéro de téléphone');
+            document.getElementById('telephone').focus();
+            return false;
+        }
+        if (!email) {
+            alert('Veuillez saisir votre adresse email');
+            document.getElementById('email').focus();
+            return false;
+        }
+        
+        // Validation simple de l'email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Veuillez saisir une adresse email valide');
+            document.getElementById('email').focus();
+            return false;
+        }
+        
+        return true;
+    } else if (step === 3) {
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm_password').value;
+        const cgu = document.getElementById('cgu').checked;
+        
+        if (!password) {
+            alert('Veuillez créer un mot de passe');
+            document.getElementById('password').focus();
+            return false;
+        }
+        if (!confirm) {
+            alert('Veuillez confirmer votre mot de passe');
+            document.getElementById('confirm_password').focus();
+            return false;
+        }
+        if (password !== confirm) {
+            alert('Les mots de passe ne correspondent pas');
+            return false;
+        }
+        
+        // Vérifier la force du mot de passe
+        const hasMinLength = password.length >= 8;
+        const hasNumber = /\d/.test(password);
+        const hasUpper = /[A-Z]/.test(password);
+        const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        
+        if (!hasMinLength || !hasNumber || !hasUpper || !hasSpecial) {
+            alert('Votre mot de passe doit contenir au moins 8 caractères, un chiffre, une majuscule et un caractère spécial');
+            return false;
+        }
+        
+        if (!cgu) {
+            alert('Vous devez accepter les conditions générales d\'utilisation');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    return true;
+}
+
+// Fonction pour aller à une étape spécifique (appelée depuis la navigation latérale)
+function goToStep(step) {
+    if (step < 1 || step > 3) return;
+    
+    // Si on veut aller à une étape supérieure à l'étape courante
+    if (step > currentStep) {
+        // Valider toutes les étapes intermédiaires
+        for (let i = currentStep; i < step; i++) {
+            if (!validateStep(i)) {
+                return;
+            }
+        }
+    }
+    
+    // Sauvegarder les données de l'étape courante avant de changer
+    saveCurrentStepData();
+    
+    // Mettre à jour l'étape courante
+    currentStep = step;
+    updateUI(step);
+}
+
+// Fonction pour passer à l'étape suivante
+function nextStep(currentStepParam) {
+    if (!validateStep(currentStepParam)) {
+        return;
+    }
+    
+    // Sauvegarder les données de l'étape courante
+    saveCurrentStepData();
+    
+    if (currentStepParam < 3) {
+        currentStep = currentStepParam + 1;
+        updateUI(currentStep);
+    }
+}
+
+// Fonction pour revenir à l'étape précédente
+function prevStep(currentStepParam) {
+    if (currentStepParam > 1) {
+        // Sauvegarder les données de l'étape courante
+        saveCurrentStepData();
+        
+        currentStep = currentStepParam - 1;
+        updateUI(currentStep);
+    }
+}
+
+// Mettre à jour toute l'interface utilisateur en fonction de l'étape courante
+function updateUI(step) {
+    // Mettre à jour les panneaux
+    document.querySelectorAll('.step-panel').forEach((panel, index) => {
+        if (index + 1 === step) {
+            panel.classList.add('active');
+        } else {
+            panel.classList.remove('active');
+        }
+    });
+    
+    // Mettre à jour les étapes dans la barre latérale
+    for (let i = 1; i <= 3; i++) {
+        const stepElement = document.getElementById(`nav-step-${i}`);
+        const stepNum = document.getElementById(`sn-${i}`);
+        
+        if (i < step) {
+            // Étapes déjà passées
+            stepElement.className = 'step done';
+            stepNum.className = 'step-num done';
+        } else if (i === step) {
+            // Étape courante
+            stepElement.className = 'step active';
+            stepNum.className = 'step-num active';
+        } else {
+            // Étapes à venir
+            stepElement.className = 'step pending';
+            stepNum.className = 'step-num pending';
+        }
+    }
+    
+    // Mettre à jour la barre de progression
+    for (let i = 1; i <= 3; i++) {
+        const progress = document.getElementById(`pg-${i}`);
+        if (i < step) {
+            progress.className = 'progress-seg done';
+        } else if (i === step) {
+            progress.className = 'progress-seg active';
+        } else {
+            progress.className = 'progress-seg';
+        }
+    }
+    
+    // Mettre à jour l'en-tête
+    const badgeNum = document.getElementById('badge-num');
+    const badgeLabel = document.getElementById('badge-label');
+    const headingTitle = document.getElementById('heading-title');
+    const headingSub = document.getElementById('heading-sub');
+    
+    badgeNum.textContent = step;
+    badgeLabel.textContent = `Étape ${step} sur 3`;
+    
+    if (step === 1) {
+        headingTitle.textContent = 'Informations personnelles';
+        headingSub.textContent = 'Renseignez vos informations d\'identité';
+        document.getElementById('lock-deco').classList.remove('visible');
+    } else if (step === 2) {
+        headingTitle.textContent = 'Coordonnées';
+        headingSub.textContent = 'Comment vous joindre ?';
+        document.getElementById('lock-deco').classList.remove('visible');
+    } else if (step === 3) {
+        headingTitle.textContent = 'Sécurité';
+        headingSub.textContent = 'Choisissez un mot de passe sécurisé';
+        document.getElementById('lock-deco').classList.add('visible');
+    }
+    
+    // Charger les données sauvegardées pour cette étape
+    loadStepData(step);
+}
+
+// Fonctions pour le sélecteur de pays
+function toggleDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('country-dropdown');
+    dropdown.classList.toggle('open');
+}
+
+function selectCountry(flag, code, value) {
+    document.getElementById('sel-flag').textContent = flag;
+    document.getElementById('sel-code').textContent = code;
+    document.getElementById('country-dropdown').classList.remove('open');
+    
+    // Mettre à jour les classes selected dans la dropdown
+    document.querySelectorAll('.country-option').forEach(opt => {
+        opt.classList.remove('selected');
+    });
+    event.target.closest('.country-option').classList.add('selected');
+}
+
+// Fonction pour afficher/masquer le mot de passe
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+    
+    // Changer l'icône
+    const svg = button.querySelector('svg');
+    if (type === 'text') {
+        svg.innerHTML = '<circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><line x1="3" y1="3" x2="21" y2="21"/>';
+    } else {
+        svg.innerHTML = '<circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>';
+    }
+}
+
+// Fonction pour vérifier la force du mot de passe
+function checkPasswordStrength() {
+    const password = document.getElementById('password').value;
+    
+    const hasMinLength = password.length >= 8;
+    const hasNumber = /\d/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    // Mettre à jour les critères
+    document.getElementById('crit-length').className = hasMinLength ? 'crit met' : 'crit';
+    document.getElementById('crit-number').className = hasNumber ? 'crit met' : 'crit';
+    document.getElementById('crit-upper').className = hasUpper ? 'crit met' : 'crit';
+    document.getElementById('crit-special').className = hasSpecial ? 'crit met' : 'crit';
+    
+    // Calculer la force
+    const score = [hasMinLength, hasNumber, hasUpper, hasSpecial].filter(Boolean).length;
+    
+    // Mettre à jour les barres
+    const bars = ['sbar1', 'sbar2', 'sbar3', 'sbar4'];
+    const barClasses = ['', 'weak', 'medium', 'strong', 'perfect'];
+    
+    bars.forEach((bar, index) => {
+        const element = document.getElementById(bar);
+        element.className = 's-bar';
+        if (index < score) {
+            element.classList.add(barClasses[score]);
+        }
+    });
+    
+    // Mettre à jour le label
+    const labels = ['', 'Faible', 'Moyen', 'Fort', 'Excellent'];
+    document.getElementById('strength-label').textContent = labels[score];
+    document.getElementById('strength-label').style.color = 
+        score === 1 ? '#e74c3c' : 
+        score === 2 ? '#f39c12' : 
+        score === 3 ? '#2e8b57' : 
+        score === 4 ? '#1a7a42' : '#b5c8bc';
+    
+    checkPasswordMatch();
+}
+
+// Fonction pour vérifier si les mots de passe correspondent
+function checkPasswordMatch() {
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    const msgElement = document.getElementById('password-match-msg');
+    
+    if (!confirm) {
+        msgElement.innerHTML = '';
+        return;
+    }
+    
+    if (password === confirm) {
+        msgElement.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Les mots de passe correspondent';
+        msgElement.style.color = '#1a7a42';
+    } else {
+        msgElement.innerHTML = '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Les mots de passe ne correspondent pas';
+        msgElement.style.color = '#c0392b';
+    }
+}
+
+// Empêcher la soumission du formulaire si les validations côté client échouent
+document.getElementById('main-form').addEventListener('submit', function(e) {
+    if (!validateStep(3)) {
+        e.preventDefault();
+        return false;
+    }
+    return true;
+});
+</script>
+
+</body>
+</html>

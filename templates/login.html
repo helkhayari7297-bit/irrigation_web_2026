@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Login — Irrigation Intelligente</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+    --green-900: #0d2b1a;
+    --green-700: #1a4a2e;
+    --green-500: #2e8b57;
+    --green-400: #3da668;
+    --green-300: #4aba78;
+    --green-100: #b8dfc8;
+    --cream:     #f7f3ec;
+    --sand:      #e2d9c8;
+    --text:      #0f2d1c;
+    --muted:     #4a7a5e;
+    --error:     #c0392b;
+    --success:   #1a7a42;
+    --shadow:    0 32px 80px rgba(0,0,0,0.45), 0 8px 24px rgba(0,0,0,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--green-900);
+    position: relative;
+}
+
+.bg-photo {
+    position: fixed;
+    inset: 0;
+    background: url("{{ url_for('static', filename='hhh.jpg.png') }}") no-repeat center center / cover;
+    z-index: 0;
+    transform: scale(1.05);
+    animation: slowZoom 20s ease-in-out infinite alternate;
+}
+@keyframes slowZoom {
+    from { transform: scale(1.05); }
+    to   { transform: scale(1.12); }
+}
+
+.bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(160deg, rgba(13,43,26,0.82) 0%, rgba(26,74,46,0.65) 50%, rgba(13,43,26,0.88) 100%);
+}
+
+.bg-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+}
+
+.page {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    width: 100%;
+    max-width: 880px;
+    min-height: 520px;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin: 1.5rem;
+}
+
+.panel-left {
+    flex: 1;
+    padding: 3rem 2.5rem;
+    background: linear-gradient(160deg, var(--green-700) 0%, var(--green-900) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+.panel-left::before {
+    content: '';
+    position: absolute;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    border: 1px solid rgba(74,186,120,0.1);
+    top: -80px; right: -90px;
+}
+.panel-left::after {
+    content: '';
+    position: absolute;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 1px solid rgba(74,186,120,0.07);
+    bottom: 30px; left: -60px;
+}
+
+.brand { position: relative; z-index: 2; }
+
+.brand-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1.2rem;
+    animation: sway 4s ease-in-out infinite;
+}
+@keyframes sway {
+    0%, 100% { transform: rotate(-3deg); }
+    50%       { transform: rotate(3deg); }
+}
+
+.brand h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.15;
+    margin-bottom: 0.6rem;
+}
+
+.brand p {
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-100);
+    opacity: 0.7;
+}
+
+.stats {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(255,255,255,0.55);
+    font-size: 0.8rem;
+    font-weight: 300;
+}
+.stat-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green-300);
+    flex-shrink: 0;
+    animation: blink 2.5s ease-in-out infinite;
+}
+.stat-item:nth-child(2) .stat-dot { animation-delay: 0.8s; }
+.stat-item:nth-child(3) .stat-dot { animation-delay: 1.6s; }
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.25; }
+}
+
+.panel-right {
+    width: 390px;
+    flex-shrink: 0;
+    background: var(--cream);
+    padding: 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    animation: slideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideIn {
+    from { transform: translateX(30px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+.form-heading {
+    margin-bottom: 2rem;
+}
+.form-heading h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+.form-heading span {
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--muted);
+}
+
+.field {
+    margin-bottom: 1.1rem;
+    animation: fadeUp 0.5s ease both;
+}
+.field:nth-child(1) { animation-delay: 0.12s; }
+.field:nth-child(2) { animation-delay: 0.19s; }
+.field:nth-child(3) { animation-delay: 0.26s; }
+@keyframes fadeUp {
+    from { transform: translateY(10px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.45rem;
+}
+
+.input-wrap {
+    position: relative;
+    transition: transform 0.2s ease;
+}
+.input-wrap:focus-within { transform: scale(1.01); }
+
+.input-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+}
+.input-icon svg {
+    width: 15px; height: 15px;
+    stroke: var(--green-400);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.2s;
+}
+.input-wrap:focus-within .input-icon svg { stroke: var(--green-500); }
+
+.input-wrap input {
+    width: 100%;
+    padding: 0.8rem 2.6rem;
+    background: white;
+    border: 1.5px solid var(--sand);
+    border-radius: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-wrap input:focus {
+    border-color: var(--green-500);
+    box-shadow: 0 0 0 3px rgba(46,139,87,0.1);
+}
+.input-wrap input::placeholder { color: #b5c8bc; font-weight: 300; }
+
+.contact-separator {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: -0.25rem 0 0.8rem;
+    padding: 0 0.2rem;
+}
+.contact-separator span {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.55;
+    white-space: nowrap;
+}
+.contact-separator::before,
+.contact-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--sand);
+}
+
+.contact-toggle {
+    display: flex;
+    background: var(--sand);
+    border-radius: 9px;
+    padding: 3px;
+    margin-bottom: 0.75rem;
+    animation: fadeUp 0.5s 0.19s ease both;
+}
+.contact-toggle button {
+    flex: 1;
+    padding: 0.42rem 0.5rem;
+    border: none;
+    background: transparent;
+    border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+.contact-toggle button svg {
+    width: 12px; height: 12px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.contact-toggle button.active {
+    background: white;
+    color: var(--green-500);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+}
+
+.field-contact {
+    animation: fadeUp 0.5s 0.19s ease both;
+}
+.contact-input-wrap {
+    position: relative;
+    transition: transform 0.2s ease;
+}
+.contact-input-wrap:focus-within { transform: scale(1.01); }
+.contact-input-wrap .input-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+}
+.contact-input-wrap .input-icon svg {
+    width: 15px; height: 15px;
+    stroke: var(--green-400);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.2s;
+}
+.contact-input-wrap:focus-within .input-icon svg { stroke: var(--green-500); }
+.contact-input-wrap input {
+    width: 100%;
+    padding: 0.8rem 2.6rem;
+    background: white;
+    border: 1.5px solid var(--sand);
+    border-radius: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.contact-input-wrap input:focus {
+    border-color: var(--green-500);
+    box-shadow: 0 0 0 3px rgba(46,139,87,0.1);
+}
+.contact-input-wrap input::placeholder { color: #b5c8bc; font-weight: 300; }
+
+.phone-prefix {
+    position: absolute;
+    left: 38px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 500;
+    pointer-events: none;
+    display: none;
+}
+.contact-input-wrap.phone-mode input {
+    padding-left: 4rem;
+}
+.contact-input-wrap.phone-mode .phone-prefix { display: block; }
+
+.btn-eye {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    line-height: 0;
+    color: #b5c8bc;
+    transition: color 0.2s;
+}
+.btn-eye:hover { color: var(--green-500); }
+.btn-eye svg {
+    width: 15px; height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.5s 0.36s ease both;
+}
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    font-size: 0.78rem;
+    color: var(--muted);
+    user-select: none;
+}
+.remember input[type="checkbox"] {
+    accent-color: var(--green-500);
+    width: 14px; height: 14px;
+    cursor: pointer;
+}
+.link-forgot {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--green-500);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.link-forgot:hover { color: var(--green-700); }
+
+.btn-submit {
+    width: 100%;
+    padding: 0.88rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--green-500), var(--green-300));
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 4px 18px rgba(46,139,87,0.35);
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.42s ease both;
+}
+.btn-submit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(46,139,87,0.45); }
+.btn-submit:hover::after { opacity: 1; }
+.btn-submit:active { transform: translateY(0); }
+
+.signup-link {
+    margin-top: 1.4rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--sand);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    animation: fadeUp 0.5s 0.48s ease both;
+}
+.signup-link a {
+    color: var(--green-500);
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 0.2rem;
+    transition: color 0.2s;
+}
+.signup-link a:hover { color: var(--green-700); text-decoration: underline; }
+
+.flash {
+    margin-top: 0.9rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 9px;
+    font-size: 0.8rem;
+    text-align: center;
+    animation: shake 0.4s ease;
+}
+.flash.error   { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); color: var(--error); }
+.flash.success { background: rgba(26,122,66,0.08);  border: 1px solid rgba(26,122,66,0.2);  color: var(--success); }
+.flash.warning { background: rgba(230,126,34,0.08); border: 1px solid rgba(230,126,34,0.2); color: #a04000; }
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-5px); }
+    75%       { transform: translateX(5px); }
+}
+
+@media (max-width: 900px) {
+    .page { max-width: 760px; }
+    .panel-left { padding: 2.5rem 2rem; }
+    .brand h1 { font-size: 1.9rem; }
+    .panel-right { width: 360px; padding: 2.5rem 2rem; }
+}
+
+@media (max-width: 760px) {
+    body { align-items: flex-start; padding: 1.5rem 0; }
+    .page {
+        flex-direction: column;
+        max-width: 480px;
+        min-height: auto;
+        margin: 1rem;
+        border-radius: 22px;
+    }
+    .panel-left {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 2rem;
+        min-height: auto;
+        gap: 1rem;
+    }
+    .panel-left::before { width: 160px; height: 160px; top: -50px; right: -40px; }
+    .panel-left::after  { display: none; }
+    .brand { display: flex; align-items: center; gap: 1rem; }
+    .brand-icon { font-size: 2rem; margin-bottom: 0; animation: none; }
+    .brand h1 { font-size: 1.35rem; margin-bottom: 0.1rem; }
+    .brand p  { font-size: 0.7rem; }
+    .stats { flex-direction: column; gap: 0.5rem; text-align: right; }
+    .stat-item { font-size: 0.72rem; justify-content: flex-end; }
+    .panel-right { width: 100%; padding: 2rem 2rem; border-radius: 0; }
+    .form-heading h2 { font-size: 1.5rem; }
+}
+
+@media (max-width: 520px) {
+    body { padding: 0; }
+    .page { max-width: 100%; min-height: 100vh; border-radius: 0; margin: 0; }
+    .panel-left { padding: 1.2rem 1.5rem; }
+    .brand-icon { font-size: 1.6rem; }
+    .brand h1   { font-size: 1.15rem; }
+    .stats      { display: none; }
+    .panel-right { padding: 1.8rem 1.5rem; flex: 1; }
+    .form-heading { margin-bottom: 1.5rem; }
+    .form-heading h2 { font-size: 1.4rem; }
+    .input-wrap input { font-size: 0.95rem; padding: 0.85rem 2.6rem; }
+    .btn-submit       { font-size: 1rem; padding: 0.95rem; }
+    .form-options     { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+}
+
+@media (max-width: 360px) {
+    .panel-right { padding: 1.5rem 1.2rem; }
+    .brand h1    { font-size: 1rem; }
+    .panel-left  { padding: 1rem 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-photo"></div>
+<div class="bg-overlay"></div>
+<div class="bg-grain"></div>
+
+<div class="page">
+
+    <div class="panel-left">
+        <div class="brand">
+            <span class="brand-icon">🌿</span>
+            <h1>Irrigation<br>Intelligente</h1>
+            <p>Système de gestion agricole</p>
+        </div>
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-dot"></span>
+                Surveillance en temps réel
+            </div>
+            <div class="stat-item">
+                <span class="stat-dot"></span>
+                Optimisation de la consommation d'eau
+            </div>
+            <div class="stat-item">
+                <span class="stat-dot"></span>
+                Alertes météo automatiques
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-right">
+
+        <div class="form-heading">
+            <h2>Connexion</h2>
+            <span>Bienvenue, entrez vos identifiants</span>
+        </div>
+
+        <form method="POST" action="{{ url_for('login') }}" novalidate>
+            {{ csrf_token() if csrf_token is defined }}
+
+            <div class="contact-separator">
+                <span>Email ou téléphone</span>
+            </div>
+
+            <div class="contact-toggle">
+                <button type="button" id="btn-email" class="active" onclick="switchContact('email')">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+                    Adresse e-mail
+                </button>
+                <button type="button" id="btn-phone" onclick="switchContact('phone')">
+                    <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.64 3.28 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Téléphone
+                </button>
+            </div>
+
+            <div class="field-contact" style="margin-bottom: 1.1rem;">
+                <div class="contact-input-wrap" id="contact-wrap">
+                    <span class="input-icon" id="contact-icon">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+                    </span>
+                    <span class="phone-prefix" id="phone-prefix">+212</span>
+                    <input type="email" id="contact-input" name="contact"
+                           placeholder="exemple@email.com"
+                           autocomplete="email"
+                           value="{{ request.form.get('contact', '') }}">
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="password">Mot de passe</label>
+                <div class="input-wrap">
+                    <span class="input-icon">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </span>
+                    <input type="password" id="password" name="password"
+                           placeholder="Votre mot de passe"
+                           autocomplete="current-password"
+                           required>
+                    <button type="button" class="btn-eye" onclick="togglePass()" aria-label="Afficher le mot de passe">
+                        <svg id="eye-icon" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember">
+                    <input type="checkbox" name="remember"> Se souvenir de moi
+                </label>
+                <a href="/forgot-password" class="link-forgot">Mot de passe oublié ?</a>
+            </div>
+
+            <button type="submit" class="btn-submit">Se connecter →</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">
+                {% if category == 'error' %}⚠ {% elif category == 'success' %}✓ {% else %}ℹ {% endif %}{{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="signup-link">
+            Pas encore de compte ?<a href="{{ url_for('signup') }}">Créer un compte</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function togglePass() {
+    const input = document.getElementById('password');
+    const icon  = document.getElementById('eye-icon');
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    icon.innerHTML = show
+        ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+           <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+           <line x1="1" y1="1" x2="23" y2="23"/>`
+        : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+}
+
+const emailIcon = `<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:var(--green-400);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>`;
+const phoneIcon = `<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:var(--green-400);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.64 3.28 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+
+function switchContact(mode) {
+    const input  = document.getElementById('contact-input');
+    const wrap   = document.getElementById('contact-wrap');
+    const icon   = document.getElementById('contact-icon');
+    const btnE   = document.getElementById('btn-email');
+    const btnP   = document.getElementById('btn-phone');
+    const hidden = document.getElementById('contact-type');
+
+    if (mode === 'email') {
+        input.type        = 'email';
+        input.name        = 'email';
+        input.placeholder = 'exemple@email.com';
+        input.autocomplete = 'email';
+        wrap.classList.remove('phone-mode');
+        icon.innerHTML    = emailIcon;
+        btnE.classList.add('active');
+        btnP.classList.remove('active');
+        if (hidden) hidden.value = 'email';
+    } else {
+        input.type        = 'tel';
+        input.name        = 'phone';
+        input.placeholder = '06 12 34 56 78';
+        input.autocomplete = 'tel';
+        wrap.classList.add('phone-mode');
+        icon.innerHTML    = phoneIcon;
+        btnP.classList.add('active');
+        btnE.classList.remove('active');
+        if (hidden) hidden.value = 'phone';
+    }
+
+    input.style.opacity = '0';
+    input.style.transform = 'translateY(4px)';
+    setTimeout(() => {
+        input.style.transition = 'opacity 0.2s, transform 0.2s';
+        input.style.opacity = '1';
+        input.style.transform = 'translateY(0)';
+    }, 10);
+    input.focus();
+}
+</script>
+
+</body>
+</html>
